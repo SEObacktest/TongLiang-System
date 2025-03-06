@@ -21,7 +21,7 @@ export async function get(url, params = {}) {
 
 }
 
-export async function post(url, data = {}, isGetExcel = false) {
+export async function post(url, data = {}) {
 
   let value;
   
@@ -33,13 +33,15 @@ export async function post(url, data = {}, isGetExcel = false) {
   //   }
   // } else {
     var headers = {
-      'Content-Type':'application/x-www-form-urlencoded',
+      // 'Content-Type':'application/json',
       'X-CSRFToken' : await getToken()
     }
   // }
 
   var config = {headers: headers}
-
+  console.log(url)
+  console.log(data)
+  console.log(config)
   await axios.post(
     url,
     data,

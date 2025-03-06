@@ -87,7 +87,12 @@ async function refresh_activities_list_all(user) {
             });
         }
     }
-
+    // console.log("studentId: " + studentId.value)
+    // console.log("startTime: " + startTime.value)
+    // console.log("endTime: " + endTime.value)
+    // console.log("certified: " + certified.value)
+    // console.log("passed: " + passed.value)
+    // console.log("adminId: " + adminId.value)
     activity_list.value = await get_activities_list_request({
        "studentId": studentId.value,
        "startTime": '*',
