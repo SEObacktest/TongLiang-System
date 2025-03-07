@@ -140,9 +140,6 @@ class Server(viewsets.GenericViewSet):
                         'userId': request.user.userId,
                         'username': request.user.username,
                         'phone': request.user.phone,
-                        'score_test1': request.user.score_test1,
-                        'stage': request.user.stage,
-                        'isTeacher': request.user.isTeacher,
                         'is_admin': True
                     },
                     'message': '已经登录了'
@@ -154,9 +151,6 @@ class Server(viewsets.GenericViewSet):
                         'userId': request.user.userId,
                         'username': request.user.username,
                         'phone': request.user.phone,
-                        'score_test1': request.user.score_test1,
-                        'stage': request.user.stage,
-                        'isTeacher': request.user.isTeacher,
                         'is_admin': False
                     },
                     'message': '已经登录了'
@@ -312,12 +306,10 @@ class Server(viewsets.GenericViewSet):
         userId = data['userId']
         username = data['username']
         phone = data['phone']
-        stage = data['stage']
         try:
             student = EvaluationUser.objects.get(userId=userId)
             student.username = username
             student.phone = phone
-            student.stage = stage
             student.save()
             resp = {
                 'status': True,
@@ -413,7 +405,6 @@ class Server(viewsets.GenericViewSet):
             activity = Activity.objects.create(name=name, description=description, startTime=startTime, endTime=endTime,
                                                location=location, student=student, type=activityType)
             activity.save()
-            student.score_test1 += 1
             student.save()
             resp = {
                 'status': True,
