@@ -25,7 +25,7 @@ export default defineConfig({
     
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'http://192.168.3.215:8000',
         // vite对于proxy的封装和vuecli不一样，需要额外增加secure: false绕过https的安全验证才能请求到https的地址
         changeOrigin: true, // 允许跨域
         secure: false,
