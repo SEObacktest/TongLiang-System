@@ -21,7 +21,8 @@ async function logout() {
 <div></div>
 
 <div id='main'>
-    <div class="logo">学生党员评价量化考核系统</div>
+    <div class="logo"></div>
+    <div class="logo-title">同梁在线业务系统</div>
     <div class="user" v-if="props.user">
         <div class="user-avatar"></div>
         <div class="user-name">您好，{{ props.user.username }}</div>
@@ -44,6 +45,15 @@ async function logout() {
     align-items: center;
 }
 .logo {
+    width: 200px;
+    height: 100px;
+    background-image: url('@img/logo.png');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    margin-left: 100px;
+}
+.logo-title {
     font-size: 42px;
     margin-left: 100px;
     font-family: "清风行楷体";
