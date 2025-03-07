@@ -1,3 +1,7 @@
 django
 djangorestframework
 Pillow
+django-cors-headers
+rest-framework-simplejwt
+djangorestframework-simplejwt
+xlwt
