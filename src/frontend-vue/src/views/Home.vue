@@ -42,7 +42,7 @@ const pageList = ref([
 
 const user                 = ref("")
 
-const selectedName = ref("首页")
+const selectedName = ref("约面管理")
 
 function refresh() {
     window.location.reload()
@@ -77,6 +77,7 @@ is_login()
 <div></div>
 <Header :user="user"></Header>
 <div id='main'>
+    
     <SideBar :user="user" @selectItem="(key) => {selectedName = key}"></SideBar>
     <div class="contain">
         <div class="body">
@@ -89,7 +90,7 @@ is_login()
 
 <style scoped>
 #main {
-    min-height: 1328px;
+    min-height: 100vh;
     display: flex;
     flex-direction: row;
     /* 一定要先制定background在加其他限制 */
@@ -97,9 +98,13 @@ is_login()
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    justify-content: center;
 }
 .contain {
     display: flex;
+    flex: 1;
+    justify-content: center;
+
 }
 .body {
     display: flex;
