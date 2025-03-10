@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 import xlwt
 
-from .models import EvaluationUser, Activity, ActivityImage, UserImage
+from .models import EvaluationUser, Activity, ActivityImage, UserImage, TestCurriculumVitae
 
 
 # 参考: https://blog.csdn.net/weixin_55638841/article/details/133996079
@@ -275,42 +275,94 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     @action(detail=False, methods=['post'])
-    def student_register(self, request, *args, **kwargs):
+    def hr_register(self, request, *args, **kwargs):
         print("用户请求了注册")
         data = request.data
-        userId = data['studentId']
-        username = data['username']
+        userId = data['userId']
+        username = data['name']
         password = data['password']
         phone = data['phone']
+        age = data['age']
+        gender = data['gender']
+        account = data['account']
+        bank = data['bank']
+        bankCard = data['bankCard']
+        accountHolderName = data['accountHolderName']
+        idCard = data['idCard']
         try:
-            student = EvaluationUser.objects.create_user(userId=userId, username=username, phone=phone)
-            student.set_password(password)
-            student.save()
+            hr = EvaluationUser.objects.create_user(
+                userId=userId,
+                username=username,
+                phone=phone,
+                age=age,
+                gender=gender,
+                account=account,
+                bank=bank,
+                bankCard=bankCard,
+                accountHolderName=accountHolderName,
+                idCard=idCard,
+                isAdmin=False
+            )
+            hr.set_password(password)
+            hr.save()
             resp = {
                 'status': True,
                 'message': '注册成功'
             }
             print("用户注册成功")
-        except:
+        except Exception as e:
             resp = {
                 'status': False,
-                'message': '注册失败'
+                'message': '注册失败' + str(e)
             }
-            print("用户注册失败")
+            print("用户注册失败" + str(e))
         return Response(resp)
 
     @action(detail=False, methods=['post'])
-    def student_update(self, request, *args, **kwargs):
+    def hr_update(self, request, *args, **kwargs):
         print("用户请求了更新")
         data = request.data
         userId = data['userId']
         username = data['username']
         phone = data['phone']
         try:
-            student = EvaluationUser.objects.get(userId=userId)
-            student.username = username
-            student.phone = phone
-            student.save()
+            hr = EvaluationUser.objects.get(userId=userId)
+            hr.username = username
+            hr.phone = phone
+            hr.age = data['age']
+            hr.gender = data['gender']
+            hr.bankCard = data['bankCard']
+            hr.bank = data['bank']
+            hr.accountHolderName = data['accountHolderName']
+            hr.idCard = data['idCard']
+            hr.account = data['account']
+
+            hr.save()
+            resp = {
+                'status': True,
+                'message': '更新成功'
+            }
+            print("用户更新成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '更新失败'
+            }
+            print("用户更新失败")
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def question_update(self, request, *args, **kwargs):
+        print("用户请求了题目更新")
+        data = request.data
+        questionId = data['id']
+        questionPost = data['post']
+        questionAnswer = data['answer']
+        try:
+            question = TestCurriculumVitae.objects.get(id=questionId)
+            question.post = questionPost
+            question.answer = questionAnswer
+            question.save()
             resp = {
                 'status': True,
                 'message': '更新成功'
@@ -359,7 +411,7 @@ class Server(viewsets.GenericViewSet):
     def delete_student(self, request, *args, **kwargs):
         print("管理员请求了删除学生")
         data = request.data
-        studentId = data['studentId']
+        studentId = data['userId']
         try:
             student = EvaluationUser.objects.get(userId=studentId)
             userImages = UserImage.objects.filter(user=student)
@@ -375,6 +427,27 @@ class Server(viewsets.GenericViewSet):
                     activityImage.delete()  # 删除活动图片
                 activity.delete()  # 删除活动
             student.delete()
+            resp = {
+                'status': True,
+                'message': '删除成功'
+            }
+            print("管理员删除学生成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '删除失败'
+            }
+            print("管理员删除学生失败")
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def delete_question(self, request, *args, **kwargs):
+        print("管理员请求了删除学生")
+        data = request.data
+        questionId = data['questionId']
+        try:
+            question = TestCurriculumVitae.objects.get(id=questionId)
+            question.delete()
             resp = {
                 'status': True,
                 'message': '删除成功'
@@ -423,6 +496,52 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     @action(detail=False, methods=['post'])
+    def create_question(self, request, *args, **kwargs):
+        print("用户请求了新建题目")
+
+        # 读取并解析上传的 JSON 文件
+        json_file = request.FILES.get("json")
+        if json_file:
+            data = json.loads(json_file.read().decode('utf-8'))
+        else:
+            return Response({"status": False, "message": "没有上传JSON文件"})
+
+        # 获取上传的文件
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"status": False, "message": "没有上传文件"})
+
+        post = data.get('post')
+        answer = data.get('answer')
+
+        try:
+            # 创建题目对象
+            question = TestCurriculumVitae.objects.create(
+                post=post,
+                answer=answer,
+                file=file  # 文件会自动保存到 MEDIA_ROOT 目录
+            )
+            question.save()
+
+            resp = {
+                'status': True,
+                'message': '新建题目成功',
+                'data': {
+                    'questionId': question.id
+                }
+            }
+            print("用户新建题目成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'message': '新建题目失败',
+                'error': str(e)  # 将错误信息返回，方便调试
+            }
+            print("用户新建题目失败:", e)
+
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
     def post_activity_image(self, request, *args, **kwargs):
         print("用户请求了提交活动图片")
         data = request.data
@@ -446,22 +565,56 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     @action(detail=False, methods=['get'])
-    def get_students_list(self, request, *args, **kwargs):
-        print("用户请求了获取学生")
+    def get_hr_list(self, request, *args, **kwargs):
+        print("用户请求了获取在线HR")
         try:
             users = EvaluationUser.objects.all()
-            students = users.filter(isAdmin=False)
+            hr = users.filter(isAdmin=False)
             resp = {
                 'status': True,
-                'data': json.loads(serialize('json', students))
+                'data': [_.to_dict() for _ in hr],
             }
-            print("用户获取学生列表成功")
+            print("用户获取在线HR列表成功")
         except:
             resp = {
                 'status': False,
                 'data': '获取失败'
             }
-            print("用户获取学生列表失败")
+            print("用户获取在线HR列表失败")
+        return Response(resp)
+
+    @action(detail=False, methods=['get'])
+    def get_question_list(self, request, *args, **kwargs):
+        print("用户请求了获取题目列表")
+        try:
+            question_list = TestCurriculumVitae.objects.all()
+            questionList = []
+            for index, item in enumerate(question_list):
+                post = item.post
+                answer = item.answer
+                file_url = item.file.url
+                questionList.append({
+                    'id': item.id,
+                    'post': post,
+                    'answer': answer,
+                    'file_url': file_url,
+                    'create_time': item.createTime,
+                    'num_test': item.numTest,
+                    'pass_time': item.passTime,
+                    'pass_rate': item.getPassRate()
+                })
+
+            resp = {
+                'status': True,
+                'data': questionList,
+            }
+            print("用户获取题目列表成功")
+        except:
+            resp = {
+                'status': False,
+                'data': '获取失败'
+            }
+            print("用户获取题目列表失败")
         return Response(resp)
 
     @action(detail=False, methods=['post'])
