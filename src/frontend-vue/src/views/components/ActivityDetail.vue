@@ -10,7 +10,9 @@ import {
     certified_activity_request,
 } from '@/api/api';   
 
-const apiURL = 'http://localhost:8000/media/'
+import { URL } from '../../api/config';
+
+const apiURL = URL + '/media/'
 
 const props = defineProps(['activity', 'user'])
 const emit  = defineEmits(['close'])
