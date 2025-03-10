@@ -14,7 +14,7 @@ import Header         from './components/header/Header.vue';
 import SideBar        from './components/SideBar.vue';  
 import AddActivity    from './components/AddActivity.vue';
 import ActivityShort  from './components/ActivityShort.vue';
-import StudentDetail  from './components/StudentDetail.vue';
+import StudentDetail  from './components/HRDetail.vue';
 import ActivityDetail from './components/ActivityDetail.vue';
 import Footer         from './components/footer/Footer.vue';
 
