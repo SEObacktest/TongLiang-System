@@ -5,7 +5,7 @@ import { ref } from 'vue'
 import router from '@/router';
 
 import {
-    get_students_list_request, 
+    get_hr_list_request, 
     is_login_request,
     export_excel_request,
 } from '@/api/api';
@@ -64,7 +64,7 @@ async function is_login() {
     if (value.status == true) {
         user.value = value.data
         if(user.value.is_admin == true){
-            var value = await get_students_list_request()
+            var value = await get_hr_list_request()
             if(value.status == false) {
                 alert(data.message)
             } else {
@@ -90,7 +90,7 @@ is_login()
 <div id='main'>
     <div class="activity-container">
         <div class="activity-menu">
-            <div class="activity-container-title">活动搜索列表</div>
+            <div class="activity-container-title">报酬管理</div>
             <div class="add-buttons">
                 <div class="add-button" @click="refresh">刷新</div>
                 <div class="add-button" @click="isShowAddActivity=true">添加活动</div>
