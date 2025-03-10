@@ -1,8 +1,8 @@
-import {get, post, post_file, post_get_excel} from '@/api/index.js'
+import {get, post, post_with_file, post_file, post_get_excel} from '@/api/index.js'
 
-export async function get_students_list_request() {
+export async function get_hr_list_request() {
 
-    let value = await get('/api/get_students_list/')
+    let value = await get('/api/get_hr_list/')
     console.log(value)
     // var number = value.number
     // value = JSON.parse(value.clinics)
@@ -10,6 +10,14 @@ export async function get_students_list_request() {
     // for (var i = 0; i < number; i++) {
     //     clinics.push(value[i].fields)
     // }
+    return value
+
+}
+
+export async function get_question_list_request() {
+
+    let value = await get('/api/get_question_list/')
+    console.log(value)
     return value
 
 }
@@ -50,17 +58,25 @@ export async function student_login_request(data) {
     return value
 }
 
-export async function student_register_request(data) {
+export async function hr_register_request(data) {
 
-    let value = await post('/api/student_register/', data)
+    let value = await post('/api/hr_register/', data)
     console.log(value)
     return value
 
 }
 
-export async function student_update_request(data) {
+export async function hr_update_request(data) {
 
-    let value = await post('/api/student_update/', data)
+    let value = await post('/api/hr_update/', data)
+    console.log(value)
+    return value
+
+}
+
+export async function question_update_request(data) {
+
+    let value = await post('/api/question_update/', data)
     console.log(value)
     return value
 
@@ -69,6 +85,27 @@ export async function student_update_request(data) {
 export async function create_activity_request(data) {
 
     let value = await post('/api/create_activity/', data)
+    console.log(value)
+    return value
+
+}
+
+export async function create_question_request(data, file) {
+
+    // 1️⃣ 创建 FormData
+    const formData = new FormData();
+
+    // 2️⃣ 添加 JSON 数据（转换为 Blob）
+    const jsonData = data
+    formData.append("json", new Blob([JSON.stringify(jsonData)], { type: "application/json" }));
+
+    // 3️⃣ 添加文件（多文件上传）
+    // for (let i = 0; i < image.value.length; i++) {
+    //     formData.append("file", image.value[i]); // "images" 是后端接收的字段名
+    // }
+    formData.append("file", file);
+
+    let value = await post_with_file('/api/create_question/', formData)
     console.log(value)
     return value
 
@@ -203,6 +240,14 @@ export async function get_activity_information_request(data) {
 export async function delete_student_request(data) {
 
     let value = await post('/api/delete_student/', data)
+    console.log(value)
+    return value
+
+}
+
+export async function delete_question_request(data) {
+
+    let value = await post('/api/delete_question/', data)
     console.log(value)
     return value
 
