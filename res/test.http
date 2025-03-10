@@ -1,0 +1,293 @@
+# 用户登录 用户不存在测试
+POST http://localhost:8000/api/student_login/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "123",
+    "password": "123"
+}
+
+# 用户不存在返回值
+# HTTP/1.1 200 OK
+# Date: Fri, 17 Jan 2025 08:32:17 GMT
+# Server: WSGIServer/0.2 CPython/3.10.5
+# Content-Type: application/json
+# Vary: Accept, origin, Cookie
+# Allow: POST, OPTIONS
+# X-Frame-Options: DENY
+# Content-Length: 44
+# X-Content-Type-Options: nosniff
+# Referrer-Policy: same-origin
+
+# {
+#   "status": false,
+#   "message": "用户不存在"
+# }
+
+###
+
+# 用户登录 密码错误测试
+POST http://localhost:8000/api/student_login/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "3212901134",
+    "password": "123"
+}
+
+# 密码错误返回值
+# HTTP/1.1 200 OK
+# Date: Fri, 17 Jan 2025 08:32:48 GMT
+# Server: WSGIServer/0.2 CPython/3.10.5
+# Content-Type: application/json
+# Vary: Accept, origin, Cookie
+# Allow: POST, OPTIONS
+# X-Frame-Options: DENY
+# Content-Length: 41
+# X-Content-Type-Options: nosniff
+# Referrer-Policy: same-origin
+
+# {
+#   "status": false,
+#   "message": "密码错误"
+# }
+
+###
+
+# 用户登录 登录成功测试
+POST http://localhost:8000/api/student_login/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "3212901134",
+    "password": "123456"
+}
+
+# 首次登录成功返回值
+# Content-Type: application/json
+# Vary: Accept, Cookie, origin
+# Allow: POST, OPTIONS
+# X-Frame-Options: DENY
+# Content-Length: 119
+# X-Content-Type-Options: nosniff
+# Referrer-Policy: same-origin
+# Set-Cookie: csrftoken=BlzqszK6IGjhUf9oz75zhUW31mYiKC4HGj6RXXIl6s9k3v6ouCqpK5tRn55zwqnU; expires=Fri, 16 Jan 2026 08:28:35 GMT; Max-Age=31449600; Path=/; SameSite=Lax,sessionid=k77cwty0eqtjl213e1m6o32obe1ztxz1; expires=Fri, 31 Jan 2025 08:28:35 GMT; HttpOnly; Max-Age=1209600; Path=/; SameSite=Lax
+
+# {
+#   "status": true,
+#   "data": {
+#     "studentId": "3212901134",
+#     "username": "沈逸帆",
+#     "phone": "18250298281"
+#   },
+#   "message": "登录成功"
+# }
+
+# 重复登录返回值
+# HTTP/1.1 403 Forbidden
+# Date: Fri, 17 Jan 2025 08:29:37 GMT
+# Server: WSGIServer/0.2 CPython/3.10.5
+# Content-Type: application/json
+# Vary: Accept, origin, Cookie
+# Allow: POST, OPTIONS
+# X-Frame-Options: DENY
+# Content-Length: 58
+# X-Content-Type-Options: nosniff
+# Referrer-Policy: same-origin
+
+# {
+#   "detail": "CSRF Failed: CSRF token missing or incorrect."
+# }
+
+###
+
+# 用户登出 登出成功测试
+GET http://localhost:8000/api/logout/ HTTP/1.1
+
+# 登出成功返回值
+# HTTP/1.1 200 OK
+# Date: Fri, 17 Jan 2025 08:31:58 GMT
+# Server: WSGIServer/0.2 CPython/3.10.5
+# Content-Type: application/json
+# Vary: Accept, origin, Cookie
+# Allow: GET, HEAD, OPTIONS
+# X-Frame-Options: DENY
+# Content-Length: 46
+# X-Content-Type-Options: nosniff
+# Referrer-Policy: same-origin
+# Set-Cookie: sessionid=""; expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; Path=/; SameSite=Lax
+
+# {
+#   "status": true,
+#   "message": "用户登出成功"
+# }
+
+###
+
+POST http://localhost:8000/api/student_register/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "3212901134",
+    "username": "沈逸帆",
+    "password": "123456",
+    "phone": "18250298281"
+}
+
+### 
+
+POST http://localhost:8000/api/student_update/ HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "3212901134",
+    "username": "沈逸帆",
+    "phone": "18250298281",
+    "stage": "发展阶段"
+}
+
+###
+
+POST http://localhost:8000/api/change_password/ HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "3212901134",
+    "oldPassword": "123456",
+    "newPassword": "1234567"
+}
+
+###
+
+POST http://localhost:8000/api/admin_login/ HTTP/1.1
+content-type: application/json
+
+{
+    "adminId": "3212901134",
+    "password": "123456"
+}
+
+###
+
+POST http://localhost:8000/api/admin_register/ HTTP/1.1
+content-type: application/json
+
+{
+    "adminId": "3212901134",
+    "username": "沈逸帆",
+    "password": "123456",
+    "phone": "18250298281"
+}
+
+###
+
+POST http://localhost:8000/api/create_activity/ HTTP/1.1
+content-type: application/json
+
+{
+    "name": "活动1",
+    "description": "活动描述",
+    "startTime": "2021-01-01 00:00:00",
+    "endTime": "2021-01-01 00:00:00",
+    "location": "活动地点",
+    "studentId": "3212901134",
+    "type": "活动类型"
+}
+
+###
+
+POST http://localhost:8000/api/post_activity_image/ HTTP/1.1
+content-type: application/json
+
+{
+    "activityId": 1,
+    "image": "media/activity/1.jpg"
+}
+
+###
+
+POST http://localhost:8000/api/get_activities_list/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "3212901134",
+    "startTime": "2021-01-01 00:00:00",
+    "endTime": "2021-01-01 00:00:00",
+    "certified": "false",
+    "passed": "false",
+    "adminId": "3212901134"
+}
+
+###
+
+POST http://localhost:8000/api/get_activity_images/ HTTP/1.1
+content-type: application/json
+
+{
+    "activityId": 1
+}
+
+###
+
+POST http://localhost:8000/api/delete_activity/ HTTP/1.1
+content-type: application/json
+
+{
+    "activityId": 1
+}
+
+###
+
+POST http://localhost:8000/api/check_activity/ HTTP/1.1
+content-type: application/json
+
+{
+    "adminId": "3212901134",
+    "activityId": 1,
+    "passed": "true"
+}
+
+###
+
+POST http://localhost:8000/api/delete_student/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "3212901134"
+}
+
+###
+
+GET http://localhost:8000/api/get_students_list/ HTTP/1.1
+
+###
+
+POST http://localhost:8000/api/post_user_image/ HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "3212901134",
+    "image": "media/user/1.jpg"
+}
+
+###
+
+POST http://localhost:8000/api/get_user_image/ HTTP/1.1
+content-type: application/json
+
+{
+    "userId": "3212901134"
+}
+
+###
+
+POST http://localhost:8000/api/export_excel/ HTTP/1.1
+content-type: application/json
+
+{
+    "studentId": "3212901134"
+}
+
+###
+
+GET http://localhost:8000/api/get_token/ HTTP/1.1
