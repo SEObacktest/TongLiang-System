@@ -2,7 +2,7 @@
 
 import { ref } from 'vue';
 
-import { student_login_request, is_login_request, student_register_request} from '@/api/api.js'
+import { student_login_request, is_login_request, hr_register_request} from '@/api/api.js'
 
 import router from '@/router';
 
@@ -81,7 +81,7 @@ async function login() {
 async function register() {  
 
 	if (registerId.value == '') {
-		registerMessage.value = '请填写学号'
+		registerMessage.value = '请填写用户ID'
 		isRegisterRegisterIdError.value = true
 		return
 	}
@@ -111,7 +111,7 @@ async function register() {
 		phone: registerPhone.value
 	}
 
-	var value = await student_register_request(data)
+	var value = await hr_register_request(data)
 
 	if (value['status'] == true) {
 		router.push('/')
@@ -160,7 +160,7 @@ profile()
 		<div class="container__form container--signup">
 			<div class="form" id="form1">
 				<h2 class="form__title">注册</h2>
-				<input v-model="registerId" type="text" placeholder="学号" class="input" :class="{'input_error': isRegisterIdError}" name="注册学号"/>	
+				<input v-model="registerId" type="text" placeholder="用户ID" class="input" :class="{'input_error': isRegisterIdError}" name="注册用户ID"/>	
 				<input v-model="registerUsername" type="text" placeholder="姓名" class="input" :class="{'input_error': isRegisterUsernameError}" name="注册姓名"/>			
 				<input v-model="registerPassword" type="password" placeholder="密码" class="input" :class="{'input_error': isRegisterPasswordError}" name="注册密码"/>
 				<input v-model="registerPhone" type="Phone" placeholder="电话" class="input" :class="{'input_error': isRegisterPhoneError}" name="注册邮箱"/>
