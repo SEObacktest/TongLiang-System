@@ -1,7 +1,6 @@
 <script setup>
 
 import {ref, onMounted, watch} from 'vue'
-import { defineEmits, defineProps } from 'vue';
 
 const emit = defineEmits(['selectItem']);
 
@@ -24,7 +23,6 @@ const selectedStyle = ref({
 const list = ref([])
 
 function getList() {
-    console.log(props)
     if (props.user.is_admin) {
         list.value = [
             {name: '首页', level: 0, group: 0, selected: true, path: '/'},
@@ -136,8 +134,8 @@ watch(() => props.user, (newUser) => {
 
 <style scoped>
 #main {
-    width: 160px;
-    height: 100vh;
+    width: 162px;
+    height: screen;
     background-color: rgb(110, 185, 208);
     display: flex;
     flex-direction: column;
