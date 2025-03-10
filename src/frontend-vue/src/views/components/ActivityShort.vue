@@ -3,7 +3,7 @@
 import { onMounted, watch } from 'vue';
 import {ref} from 'vue'
 
-import {get_students_list_request, get_activities_list_request} from "@/api/api.js";
+import {get_hr_list_request, get_activities_list_request} from "@/api/api.js";
 
 const props = defineProps(['user'])
 const emit  = defineEmits(['activity_clicked'])
@@ -41,7 +41,7 @@ async function refresh_activities_list(user) {
     if(!user.is_admin) {
         studentId.value = user.userId
     } else {
-        var value = await get_students_list_request()
+        var value = await get_hr_list_request()
         if(value.status == false) {
             alert(data.message)
         } else {
@@ -77,7 +77,7 @@ async function refresh_activities_list_all(user) {
     if(!user.is_admin) {
         studentId.value = user.userId
     } else {
-        var value = await get_students_list_request()
+        var value = await get_hr_list_request()
         if(value.status == false) {
             alert(data.message)
         } else {
