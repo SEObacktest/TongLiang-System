@@ -5,41 +5,35 @@ import { ref } from 'vue'
 import router from '@/router';
 
 import {
-    get_students_list_request, 
+    get_question_list_request, 
     is_login_request,
     export_excel_request,
 } from '@/api/api';
 
-import ActivityShort  from '../components/ActivityShort.vue';
+import InterviewList from '../components/InterviewList.vue';
+import InterviewDetail from '../components/InterviewDetail.vue';
+import AddInterview from '../components/AddInterview.vue';
 
 const user                 = ref("")
 const isShowStudentDetail  = ref(false)
-const isShowAddActivity    = ref(false)
-const isShowActivityDetail = ref(false)
-const activityShort        = ref()
+const isShowAddInterview    = ref(false)
+const isShowHrDetail = ref(false)
+const HRShort        = ref()
 const studentClicked       = ref()
-const activityClicked      = ref()
+const questionClicked      = ref()
 
-const studentList = ref([])
+const questionList = ref([])
 const studentNameList = ref([])
-
-const studentStage = ref({
-    0: "群众",
-    1: "团员",
-    2: "积极分子",
-    3: "发展对象",
-    4: "预备党员",
-    5: "党员",
-})
 
 function open_student_detail(student) {
     studentClicked.value = student
     isShowStudentDetail.value = true
 }
 
-function open_activity_detail(activity) {
-    activityClicked.value = activity
-    isShowActivityDetail.value = true
+function open_hr_detail(hr) {
+    console.log(hr)
+    questionClicked.value = hr
+    isShowHrDetail.value = true
 }
 
 async function exportInformation() {
@@ -64,14 +58,11 @@ async function is_login() {
     if (value.status == true) {
         user.value = value.data
         if(user.value.is_admin == true){
-            var value = await get_students_list_request()
+            var value = await get_question_list_request()
             if(value.status == false) {
                 alert(data.message)
             } else {
-                studentList.value = value.data
-                studentList.value.forEach(e => {
-                    studentNameList.value[e.pk] = e.fields.username
-                });
+                questionList.value = value.data
             }
         }
     } else {
@@ -88,18 +79,29 @@ is_login()
 <div></div>
 
 <div id='main'>
+    <!-- {{ questionList[0].fields }} -->
+    <Transition>
+        <div v-if="isShowHrDetail" class="container" :class="{ container_filter: isShowHrDetail }">
+            <InterviewDetail :question="questionClicked" @close="isShowHrDetail=false"></InterviewDetail>
+        </div>
+    </Transition>
+    <Transition>
+        <div v-if="isShowAddInterview" class="container" :class="{ container_filter: isShowAddInterview }">
+            <AddInterview :user="user" @close="isShowAddInterview=false"></AddInterview>
+        </div>
+    </Transition>
     <div class="activity-container">
         <div class="activity-menu">
-            <div class="activity-container-title">活动搜索列表</div>
+            <div class="activity-container-title">约面管理</div>
             <div class="add-buttons">
                 <div class="add-button" @click="refresh">刷新</div>
-                <div class="add-button" @click="isShowAddActivity=true">添加活动</div>
+                <div class="add-button" @click="isShowAddInterview=true">添加题目</div>
                 <div v-if="user.is_admin" class="add-button" @click="exportInformation">导出信息</div>
             </div>
         </div>
         <div class="split-line"></div>
         <div class="activity-list">
-            <ActivityShort :user="user" ref="activityShort" @activity_clicked="(value) => open_activity_detail(value)"></ActivityShort>
+            <InterviewList :user="user" ref="HRShort" @hr_selected="(value) => open_hr_detail(value)"></InterviewList>
         </div>
     </div>
 </div>
@@ -107,6 +109,21 @@ is_login()
 </template>
 
 <style scoped>
+.container {
+    height: 100vh;
+    width: screen;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+
+}
+.container_filter {
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    background-color: rgba(0, 0, 0, 0.3);
+}
 .activity-container {
     width: 800px;
     /* height: 1000px; */
