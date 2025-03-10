@@ -1,3 +1,5 @@
+import os
+
 from django.db import models
 from django.contrib.auth.models import User, AbstractUser
 
@@ -16,6 +18,30 @@ class EvaluationUser(AbstractUser):
     age = models.IntegerField(default=0)
     gender = models.CharField(max_length=10, default="")
     account = models.CharField(max_length=30, default="")
+
+#     计算属于该用户的Interview个数
+    def getInterviewCount(self):
+        if Interview.objects.all().filter(user=self).count() is None:
+            return 0
+        return Interview.objects.all().filter(user=self).count()
+
+    def to_dict(self):
+        return {
+            "userId": self.userId,
+            "username": self.username,
+            "phone": self.phone,
+            "isAdmin": self.isAdmin,
+            "account": self.account,
+            "bankCard": self.bankCard,
+            "bank": self.bank,
+            "accountHolderName": self.accountHolderName,
+            "idCard": self.idCard,
+            "age": self.age,
+            "gender": self.gender,
+            "last_login": self.last_login,
+            "date_joined": self.date_joined,
+            "interviewCount": self.getInterviewCount(),
+        }
 
 class Activity(models.Model):
     name = models.CharField(max_length=20)
@@ -36,6 +62,7 @@ class Interview(models.Model):
     interviewId = models.CharField(max_length=20, unique=True)
     interviewTime = models.DateTimeField()
     post = models.CharField(max_length=20)
+    user = models.ForeignKey(EvaluationUser, on_delete=models.CASCADE, related_name='CurriculumVitaeUser', default=None)
     curriculumVitae = models.ForeignKey('CurriculumVitae', on_delete=models.CASCADE, related_name='CurriculumVitae', default=None, null=True)
     isAgreed = models.BooleanField(default=False)
     isArrived = models.BooleanField(default=False)
@@ -43,7 +70,6 @@ class Interview(models.Model):
     createTime = models.DateTimeField(auto_now_add=True)
 
 class CurriculumVitae(models.Model):
-    user = models.ForeignKey(EvaluationUser, on_delete=models.CASCADE, related_name='CurriculumVitaeUser')
     interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name='CurriculumVitaeInterview')
     time = models.DateTimeField(auto_now_add=True)
     post = models.CharField(max_length=20)
@@ -54,11 +80,25 @@ class TestCurriculumVitae(models.Model):
     post = models.CharField(max_length=20)
     answer = models.BooleanField()
     file = models.FileField(upload_to='test_curriculum_vitae_file')
+    createTime = models.DateTimeField(auto_now_add=True)
+    numTest = models.IntegerField(default=0)
+    passTime = models.IntegerField(default=0)
+
+    def getPassRate(self):
+        if self.numTest == 0:
+            return 0
+        return self.passTime / self.numTest
 
 #     随机获取10道题
     def getTestCurriculumVitae(self):
         return self.objects.all().order_by('?')[:10]
 
+    def delete(self, *args, **kwargs):
+        # 在删除数据库记录之前，删除文件
+        if self.file:
+            if os.path.isfile(self.file.path):
+                os.remove(self.file.path)
+        models.Model.delete(self, *args, **kwargs)
 
 class ActivityImage(models.Model):
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, related_name='Activity')
