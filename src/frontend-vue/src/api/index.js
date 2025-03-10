@@ -39,12 +39,36 @@ export async function post(url, data = {}) {
   // }
 
   var config = {headers: headers}
-  console.log(url)
-  console.log(data)
-  console.log(config)
   await axios.post(
     url,
     data,
+    config
+  )
+  .then((response) => {
+    value = response.data
+  })
+  .catch((error) => {
+    console.log(error)
+    value = error
+  })
+  console.log(value)
+  return value;
+}
+
+export async function post_with_file(url, formData) {
+  
+  let value;
+
+  var headers = {
+    'Content-Type':'multipart/form-data',
+    'X-CSRFToken' : await getToken()
+  }
+
+  var config = {headers: headers}
+
+  await axios.post(
+    url,
+    formData,
     config
   )
   .then((response) => {
