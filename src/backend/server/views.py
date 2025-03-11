@@ -838,6 +838,27 @@ class Server(viewsets.GenericViewSet):
             print("用户结算失败" + str(e))
         return Response(resp)
 
+    @action(detail=False, methods=['post'])
+    def post_settle_all(self, request, *args, **kwargs):
+        print("用户请求了全部结算")
+        try:
+            interview_list = Interview.objects.filter(settlement=False)
+            for interview in interview_list:
+                interview.settlement = True
+                interview.save()
+            resp = {
+                'status': True,
+                'message': '全部结算成功'
+            }
+            print("用户全部结算成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'message': '全部结算失败' + str(e)
+            }
+            print("用户全部结算失败" + str(e))
+        return Response(resp)
+
     # 活动相关接口（已废弃）
     #################################################
 
