@@ -708,21 +708,22 @@ class Server(viewsets.GenericViewSet):
             interview_list = Interview.objects.all()
             interviewList = []
             for index, item in enumerate(interview_list):
-                file = CurriculumVitae.objects.get(interview=item)
-                file_url = file.file.url
-                interviewList.append({
-                    'id': item.id,
-                    'post': item.post,
-                    'name': item.interviewee,
-                    'hr': item.user.username,
-                    'interview_time': item.interviewTime,
-                    'file_url': file_url,
-                    'create_time': item.createTime,
-                    'commuteTime': item.commuteTime,
-                    'isAgreed': item.isAgreed,
-                    'isArrived': item.isArrived,
-                    'settlement': item.settlement
-                })
+                interviewList.append(item.to_dict())
+                # file = CurriculumVitae.objects.get(interview=item)
+                # file_url = file.file.url
+                # interviewList.append({
+                #     'id': item.id,
+                #     'post': item.post,
+                #     'name': item.interviewee,
+                #     'hr': item.user.username,
+                #     'interview_time': item.interviewTime,
+                #     'file_url': file_url,
+                #     'create_time': item.createTime,
+                #     'commuteTime': item.commuteTime,
+                #     'isAgreed': item.isAgreed,
+                #     'isArrived': item.isArrived,
+                #     'settlement': item.settlement
+                # })
             resp = {
                 'status': True,
                 'data': interviewList,
@@ -765,6 +766,76 @@ class Server(viewsets.GenericViewSet):
                 'message': '提交失败'
             }
             print("用户提交面试者简历成功失败")
+        return Response(resp)
+
+    # 报酬管理接口
+    #################################################
+
+    @action(detail=False, methods=['get'])
+    def get_salary_list(self, request, *args, **kwargs):
+        print("用户请求了获取未结算列表")
+        try:
+            interview_list = Interview.objects.filter(settlement=False)
+            salaryList = []
+            hrList = []
+            for index, item in enumerate(interview_list):
+                hr = item.user
+                if hr not in hrList:
+                    hrList.append(hr)
+
+            for index, item in enumerate(hrList):
+
+                userInterviewList = item.getUnSettlementInterview()
+                userInterviewListJson = []
+                salaryInformation = {
+                    'num': 0,
+                    'price': 0,
+                }
+                for userInterview in userInterviewList:
+                    userInterviewListJson.append(userInterview.to_dict())
+                    salaryInformation['num'] += 1
+                    salaryInformation['price'] += 100
+
+                salaryList.append({
+                    'hr': item.to_dict(),
+                    'interviewList': userInterviewListJson,
+                    'salaryInformation': salaryInformation,
+                })
+
+            resp = {
+                'status': True,
+                'data': salaryList,
+            }
+            print("用户获取未结算列表成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'data': '获取失败' + str(e)
+            }
+            print("用户获取未结算列表失败" + str(e))
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def post_settlement(self, request, *args, **kwargs):
+        print("用户请求了结算")
+        data = request.data
+        interviewIdList = data['interviewIdList']
+        try:
+            for interviewId in interviewIdList:
+                interview = Interview.objects.get(id=interviewId)
+                interview.settlement = True
+                interview.save()
+            resp = {
+                'status': True,
+                'message': '结算成功'
+            }
+            print("用户结算成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'message': '结算失败' + str(e)
+            }
+            print("用户结算失败" + str(e))
         return Response(resp)
 
     # 活动相关接口（已废弃）
