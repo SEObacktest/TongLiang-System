@@ -23,6 +23,7 @@ const emit  = defineEmits(['close'])
 
 const interview   = ref(props.interview)
 const new_interview = ref({
+    'id': interview.value.id,
     'name': interview.value.name,
     'hr': interview.value.hr,
     'commuteTime': interview.value.commuteTime,
@@ -44,10 +45,10 @@ const image_url = ref()
 const hr_list = ref([])
 
 onMounted(async function() {
-    refresh_user_image()
+    refresh_curriculumVitae_image()
 })
 
-async function refresh_user_image() {
+async function refresh_curriculumVitae_image() {
     var value = await get_curriculumVitae_image_request({'userId': hrId.value})
     if(value.status == false) {
         alert(value.message)
@@ -88,8 +89,13 @@ function uploadImage(e) {
 
 async function interview_update() {
     if (
+        new_interview.value.name == interview.value.name &&
         new_interview.value.post == interview.value.post &&
-        new_interview.value.answer == interview.value.answer
+        new_interview.value.hr == interview.value.hr &&
+        new_interview.value.commuteTime == interview.value.commuteTime &&
+        new_interview.value.interview_time == interview.value.interview_time &&
+        new_interview.value.isAgreed == interview.value.isAgreed &&
+        new_interview.value.isArrived == interview.value.isArrived
     ) {
         return
     }
@@ -101,6 +107,7 @@ async function interview_update() {
     } else {
         alert(value.message)
     }
+    isEdit = !isEdit
     refresh()
 }
 
@@ -203,7 +210,7 @@ getHRList()
     <div class="bottom-bar">
         <div v-if="isEdit" class="bottom-bar-item" id="close-button" @click="isEdit = !isEdit">返回</div>
         <div v-else class="bottom-bar-item" id="close-button" @click="$emit('close')">退出</div>
-        <div v-if="isEdit" class="bottom-bar-item" id="save-button" @click="interview_update();isEdit = !isEdit">保存</div>
+        <div v-if="isEdit" class="bottom-bar-item" id="save-button" @click="interview_update()">保存</div>
         <div v-else class="bottom-bar-item" id="edit-button" @click="isEdit = !isEdit">编辑</div>
         <div class="bottom-bar-item" id="delete-button" @click="delete_interview">删除约面</div>
     </div>

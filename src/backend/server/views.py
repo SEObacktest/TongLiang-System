@@ -794,6 +794,41 @@ class Server(viewsets.GenericViewSet):
             print("用户提交面试者简历成功失败")
         return Response(resp)
 
+    @action(detail=False, methods=['post'])
+    def interview_update(self, request, *args, **kwargs):
+        print("用户请求了更新")
+        data = request.data
+        interviewId = data['id']
+        interviewee = data['name']
+        hr = EvaluationUser.objects.get(username=data['hr'])
+        interviewTime = data['interview_time']
+        commuteTime = data['commuteTime']
+        post = data['post']
+        isAgreed = data['isAgreed']
+        isArrived = data['isArrived']
+        try:
+            interview = Interview.objects.get(id=interviewId)
+            interview.user = hr
+            interview.interviewee = interviewee
+            interview.interviewTime = interviewTime
+            interview.commuteTime = commuteTime
+            interview.post = post
+            interview.isAgreed = isAgreed
+            interview.isArrived = isArrived
+            interview.save()
+            resp = {
+                'status': True,
+                'message': '更新成功'
+            }
+            print("用户更新成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '更新失败'
+            }
+            print("用户更新失败")
+        return Response(resp)
+
     # 报酬管理接口
     #################################################
 
