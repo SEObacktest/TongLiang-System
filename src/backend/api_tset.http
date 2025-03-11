@@ -1,0 +1,17 @@
+GET http://localhost:8000/api/get_exam_question_list/
+
+###
+
+POST http://localhost:8000/api/post_exam_result/
+Content-Type: application/json
+
+[
+  {
+    "questionId": "1",
+    "answer": true
+  },
+  {
+    "questionId": "1",
+    "answer": false
+  }
+]
