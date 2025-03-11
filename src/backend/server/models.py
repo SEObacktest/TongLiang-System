@@ -72,6 +72,22 @@ class Interview(models.Model):
     createTime = models.DateTimeField(auto_now_add=True)
     settlement = models.BooleanField(default=False)
 
+    def to_dict(self):
+        file_url = CurriculumVitae.objects.get(interview=self).file.url
+        return {
+            'id': self.id,
+            'post': self.post,
+            'name': self.interviewee,
+            'hr': self.user.username,
+            'interview_time': self.interviewTime,
+            'file_url': file_url,
+            'create_time': self.createTime,
+            'commuteTime': self.commuteTime,
+            'isAgreed': self.isAgreed,
+            'isArrived': self.isArrived,
+            'settlement': self.settlement
+        }
+
 class CurriculumVitae(models.Model):
     interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name='CurriculumVitaeInterview')
     time = models.DateTimeField(auto_now_add=True)
