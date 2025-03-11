@@ -5,14 +5,13 @@ import { ref } from 'vue'
 import router from '@/router';
 
 import {
-    get_interview_list_request,
     is_login_request,
-    export_excel_request,
+    get_salary_list_request,
+    post_settle_all_request,
 } from '@/api/api';
 
 import SalaryList from '../components/SalaryList.vue';
 import SalaryDetail from '../components/SalaryDetail.vue';
-import SalaryAll from '../components/SalaryAll.vue';
 
 const user                 = ref("")
 const isShowStudentDetail  = ref(false)
@@ -22,12 +21,36 @@ const HRShort        = ref()
 const studentClicked       = ref()
 const salaryClicked      = ref()
 
-const salaryList = ref([])
+const salary_list = ref([])
 const studentNameList = ref([])
 
-function open_student_detail(student) {
-    studentClicked.value = student
-    isShowStudentDetail.value = true
+async function settle_all() {
+
+    let num = 0
+    let sum = 0
+
+    for (let i = 0; i < salary_list.value.length; i++) {
+        num += salary_list.value[i].salaryInformation.num
+        sum += salary_list.value[i].salaryInformation.price
+    }
+
+    const result = confirm('确定为' + salary_list.value.length +'位HR结算' + num + '次约面，总计 ' + sum + ' 元吗？')
+    if (!result) {
+        return;
+    }
+
+    const value = await post_settle_all_request({
+        'adminId': user.value.pk,
+    })
+    if (value.status == true) {
+        alert(value.message)
+        window.location.reload()
+    } else {
+        alert(value.message)
+    }
+
+    console.log(value)
+
 }
 
 function open_salary_detail(hr) {
@@ -58,12 +81,17 @@ async function is_login() {
     if (value.status == true) {
         user.value = value.data
         if(user.value.is_admin == true){
-            var value = await get_interview_list_request()
-            if(value.status == false) {
-                alert(data.message)
+            salary_list.value = await get_salary_list_request({
+                "startTime": '*',
+                "endTime"  : '*',
+                "certified": '*',
+                "passed"   : '*',
+                "adminId"  : '*',
+            })
+            if(salary_list.value.status == false) {
+                alert(salary_list.value.message)
             } else {
-                salaryList.value = value.data
-                
+                salary_list.value = salary_list.value.data
             }
         }
     } else {
@@ -81,11 +109,6 @@ is_login()
 
 <div id='main'>
     <Transition>
-        <div v-if="isShowAllSalary" class="container" :class="{ container_filter: isShowSpecificSalaryDetail }">
-            <SalaryAll :salary="salaryClicked" @close="isShowAllSalary=false"></SalaryAll>
-        </div>
-    </Transition>
-    <Transition>
         <div v-if="isShowSpecificSalaryDetail" class="container" :class="{ container_filter: isShowSpecificSalaryDetail }">
             <SalaryDetail :salary="salaryClicked" @close="isShowSpecificSalaryDetail=false"></SalaryDetail>
         </div>
@@ -95,7 +118,7 @@ is_login()
             <div class="activity-container-title">报酬管理</div>
             <div class="add-buttons">
                 <div class="add-button" @click="refresh">刷新</div>
-                <div class="add-button" @click="isShowAllSalary=true">一键结算</div>
+                <div class="add-button" @click="settle_all()">一键结算</div>
                 <div v-if="user.is_admin" class="add-button" @click="exportInformation">导出信息</div>
             </div>
         </div>
