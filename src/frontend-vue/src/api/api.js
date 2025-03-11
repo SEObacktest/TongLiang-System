@@ -1,27 +1,7 @@
 import {get, post, post_with_file, post_file, post_get_excel} from '@/api/index.js'
 
-export async function get_hr_list_request() {
-
-    let value = await get('/api/get_hr_list/')
-    console.log(value)
-    // var number = value.number
-    // value = JSON.parse(value.clinics)
-    // var clinics = []
-    // for (var i = 0; i < number; i++) {
-    //     clinics.push(value[i].fields)
-    // }
-    return value
-
-}
-
-export async function get_question_list_request() {
-
-    let value = await get('/api/get_question_list/')
-    console.log(value)
-    return value
-
-}
-
+// 登录
+//////////////////////////////////////////////////
 export async function is_login_request() {
     
     let value = await get('/api/is_login/')
@@ -43,6 +23,14 @@ export async function admin_login_request(data) {
     return value
 }
 
+export async function student_login_request(data) {
+
+    let value = await post('/api/student_login/', data)
+    console.log(value)
+    return value
+}
+// 注册
+//////////////////////////////////////////////////
 export async function admin_register_request(data) {
 
     let value = await post('/api/admin_register/', data)
@@ -51,17 +39,38 @@ export async function admin_register_request(data) {
 
 }
 
-export async function student_login_request(data) {
-
-    let value = await post('/api/student_login/', data)
-    console.log(value)
-    return value
-}
-
 export async function hr_register_request(data) {
 
     let value = await post('/api/hr_register/', data)
     console.log(value)
+    return value
+
+}
+
+// 删除
+//////////////////////////////////////////////////
+
+export async function delete_student_request(data) {
+
+    let value = await post('/api/delete_student/', data)
+    console.log(value)
+    return value
+
+}
+
+// 在线HR
+//////////////////////////////////////////////////
+
+export async function get_hr_list_request() {
+
+    let value = await get('/api/get_hr_list/')
+    console.log(value)
+    // var number = value.number
+    // value = JSON.parse(value.clinics)
+    // var clinics = []
+    // for (var i = 0; i < number; i++) {
+    //     clinics.push(value[i].fields)
+    // }
     return value
 
 }
@@ -74,17 +83,20 @@ export async function hr_update_request(data) {
 
 }
 
-export async function question_update_request(data) {
+// 题库管理
+//////////////////////////////////////////////////
 
-    let value = await post('/api/question_update/', data)
+export async function get_question_list_request() {
+
+    let value = await get('/api/get_question_list/')
     console.log(value)
     return value
 
 }
 
-export async function create_activity_request(data) {
+export async function question_update_request(data) {
 
-    let value = await post('/api/create_activity/', data)
+    let value = await post('/api/question_update/', data)
     console.log(value)
     return value
 
@@ -111,6 +123,92 @@ export async function create_question_request(data, file) {
 
 }
 
+export async function delete_question_request(data) {
+
+    let value = await post('/api/delete_question/', data)
+    console.log(value)
+    return value
+
+}
+
+// 面试管理
+//////////////////////////////////////////////////
+
+export async function get_interview_list_request() {
+
+    let value = await get('/api/get_interview_list/')
+    console.log(value)
+    return value
+
+}
+
+export async function interview_update_request(data) {
+
+    let value = await post('/api/interview_update/', data)
+    console.log(value)
+    return value
+
+}
+
+export async function create_interview_request(data, file) {
+
+    // 1️⃣ 创建 FormData
+    const formData = new FormData();
+
+    // 2️⃣ 添加 JSON 数据（转换为 Blob）
+    const jsonData = data
+    formData.append("json", new Blob([JSON.stringify(jsonData)], { type: "application/json" }));
+
+    // 3️⃣ 添加文件（多文件上传）
+    // for (let i = 0; i < image.value.length; i++) {
+    //     formData.append("file", image.value[i]); // "images" 是后端接收的字段名
+    // }
+    formData.append("file", file);
+
+    let value = await post_with_file('/api/create_interview/', formData)
+    console.log(value)
+    return value
+
+}
+
+export async function delete_interview_request(data) {
+
+    let value = await post('/api/delete_interview/', data)
+    console.log(value)
+    return value
+
+}
+
+// 报酬管理
+//////////////////////////////////////////////////
+
+export async function get_salary_list_request() {
+    
+    let value = await get('/api/get_salary_list/')
+    console.log(value)
+    return value
+
+}
+
+export async function post_settlement_request(data) {
+    
+    let value = await post('/api/post_settlement/', data)
+    console.log(value)
+    return value
+    
+}
+
+// 活动管理（已废弃）
+//////////////////////////////////////////////////
+
+export async function create_activity_request(data) {
+
+    let value = await post('/api/create_activity/', data)
+    console.log(value)
+    return value
+
+}
+
 export async function get_activities_list_request(data) {
     
     let value = await post('/api/get_activities_list/', data)
@@ -118,6 +216,45 @@ export async function get_activities_list_request(data) {
     return value
     
 }
+
+export async function delete_activity_request(data) {
+    
+    let value = await post('/api/delete_activity/', data)
+    console.log(value)
+    return value
+    
+}
+
+export async function get_activity_information_request(data) {
+    
+    let value = await post('/api/get_activity_information/', data)
+
+    console.log(value)
+    var valueJson = JSON.parse(value.patient)
+    let imageListId = value.imageListId
+    var imageList = []
+    
+    for (let i = 0; i < imageListId.length; i++) {
+        var imageUrl = await get_activity_images_request({"imageId": imageListId[i]})
+        imageList.push(String('/media/' + imageUrl))
+        
+    }
+    valueJson = valueJson[0].fields
+    valueJson.imageList = imageList
+    return valueJson
+    
+}
+
+export async function certified_activity_request(data) {
+    
+    let value = await post('/api/check_activity/', data)
+    console.log(value)
+    return value
+    
+}
+
+// 图片工具
+//////////////////////////////////////////////////
 
 export async function post_user_image_request(userId, image) {
 
@@ -128,6 +265,20 @@ export async function post_user_image_request(userId, image) {
     formData.append('image', image)
 
     let value = await post_file('/api/post_user_image/', formData)
+    console.log(value)
+    return value
+
+}
+
+export async function post_curriculumVitae_image_request(interviewId, image) {
+
+    console.log(interviewId)
+    console.log(image)
+    let formData = new FormData()
+    formData.append('interviewId', interviewId)
+    formData.append('image', image)
+
+    let value = await post_file('/api/post_curriculumVitae_image/', formData)
     console.log(value)
     return value
 
@@ -155,13 +306,6 @@ export async function post_activity_image_request(activityId, image) {
 
 }
 
-export async function delete_activity_request(data) {
-    
-    let value = await post('/api/delete_activity/', data)
-    console.log(value)
-    return value
-    
-}
 
 // export async function post_patient_3d_request(patientId, file) {
 
@@ -217,48 +361,13 @@ export async function get_user_image_request(data) {
 
 }
 
-export async function get_activity_information_request(data) {
-    
-    let value = await post('/api/get_activity_information/', data)
+export async function get_curriculumVitae_image_request(data) {
 
+    let value = await post('/api/get_curriculumVitae_image/', data)
     console.log(value)
-    var valueJson = JSON.parse(value.patient)
-    let imageListId = value.imageListId
-    var imageList = []
-    
-    for (let i = 0; i < imageListId.length; i++) {
-        var imageUrl = await get_activity_images_request({"imageId": imageListId[i]})
-        imageList.push(String('/media/' + imageUrl))
-        
-    }
-    valueJson = valueJson[0].fields
-    valueJson.imageList = imageList
-    return valueJson
-    
-}
-
-export async function delete_student_request(data) {
-
-    let value = await post('/api/delete_student/', data)
-    console.log(value)
+    // let imageData = JSON.parse(value.data)
     return value
 
-}
-
-export async function delete_question_request(data) {
-
-    let value = await post('/api/delete_question/', data)
-    console.log(value)
-    return value
-
-}
-
-export async function certified_activity_request(data) {
-    
-        let value = await post('/api/check_activity/', data)
-        console.log(value)
-        return value
-    
 }
 
 export async function export_excel_request(data) {
