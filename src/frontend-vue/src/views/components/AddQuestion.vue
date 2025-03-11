@@ -28,7 +28,7 @@ async function create_activity() {
 
     if (
     question_answer.value    == undefined ||
-    question_post.value        == undefined ||
+    // question_post.value        == undefined ||
     image.value    == null) {
         message.value = '请完整填写题目'
         return
@@ -42,7 +42,7 @@ async function create_activity() {
 
     var data = {
         'answer'    : question_answer.value == '合格' ? true : false,
-        'post'       : question_post.value,
+        // 'post'       : question_post.value,
     }
     var value = await create_question_request(data, image.value)
     if (value.status == true) {
@@ -108,18 +108,16 @@ function uploadImage(e) {
     <div class="add-activity" v-else>
         <div class="form">
             <div class="form-left">
-                <div class="form-item">
+                <!-- <div class="form-item">
                     <div class="form-item-label">面试岗位</div>
                     <div class="form-item-input">
-                        <!-- {{ question_post }} -->
                         <select name="postType" id="post-type" v-model="question_post">
                             <option v-for="post_type in post_list">
                                 {{ post_type }}
                             </option>
                         </select>
-                        <!-- <input type="text" placeholder="请选择活动类型" v-model="question_post"> -->
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="form-right">
                 <div class="form-item">

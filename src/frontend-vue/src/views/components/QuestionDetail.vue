@@ -23,8 +23,8 @@ const emit  = defineEmits(['close'])
 const question   = ref(props.question)
 const new_question = ref({
     'id': question.value.id,
-    'post': question.value.post,
-    'answer': question.value.answer == true ? '1' : '0',
+    // 'post': question.value.post,
+    'qualified': question.value.qualified == true ? '1' : '0',
 })
 const hrId = ref(props.questionuserId)
 
@@ -77,8 +77,8 @@ function uploadImage(e) {
 
 async function question_update() {
     if (
-        new_question.value.post == question.value.post &&
-        new_question.value.answer == question.value.answer
+        // new_question.value.post == question.value.post &&
+        new_question.value.qualified == question.value.qualified
     ) {
         return
     }
@@ -124,15 +124,15 @@ function refresh() {
         </div>
         <div v-if="isEdit" class="question-right">
             <form>
-                <div class="question-post">岗位: 
+                <!-- <div class="question-post">岗位: 
                     <select v-model="new_question.post">
                         <option v-for="post_type in post_list">
                             {{ post_type }}
                         </option>
                     </select>
-                </div>
-                <div class="question-answer">答案:
-                    <select v-model="new_question.answer">
+                </div> -->
+                <div class="question-qualified">答案:
+                    <select v-model="new_question.qualified">
                         <option value="1">True</option>
                         <option value="0">False</option>
                     </select>
@@ -141,16 +141,16 @@ function refresh() {
         </div>
         <div v-else class="question-right">
             <div class="question-id">题目ID: {{ question.id }}</div>
-            <div class="question-post">岗位: {{ question.post }}</div>
+            <!-- <div class="question-post">岗位: {{ question.post }}</div> -->
             <div class="question-time">创建时间: {{ formulate_time(question.create_time) }}</div>
             <div class="question-num-test">测试次数: {{ question.num_test }}</div>
             <div class="question-pass-rate">通过率: {{ question.pass_rate }}</div>
             <div class="question-pass-num">通过次数: {{ question.pass_time }}</div>
-            <div class="question-answer">答案:</div>
-            <div v-if="question.answer == true" class="question-answer">
+            <div class="question-qualified">答案:</div>
+            <div v-if="question.qualified == true" class="question-qualified">
                 <img src="@img/tongguo.png" alt="通过">
             </div>
-            <div v-else class="question-answer">
+            <div v-else class="question-qualified">
                 <img src="@img/butongguo.png" alt="错误">
             </div>
         </div>

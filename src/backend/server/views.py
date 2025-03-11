@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 import xlwt
 
-from .models import EvaluationUser, Activity, ActivityImage, UserImage, TestCurriculumVitae, Interview, CurriculumVitae
+from .models import EvaluationUser, Activity, ActivityImage, UserImage, Interview, CurriculumVitae
 
 
 # 参考: https://blog.csdn.net/weixin_55638841/article/details/133996079
@@ -208,7 +208,7 @@ class Server(viewsets.GenericViewSet):
     def student_login(self, request, *args, **kwargs):
         print("用户请求了登录")
         data = request.data
-        userId = data['studentId']
+        userId = data['userId']
         password = data['password']
         try:
             user = EvaluationUser.objects.get(userId=userId)
@@ -220,6 +220,15 @@ class Server(viewsets.GenericViewSet):
                         'studentId': user.userId,
                         'username': user.username,
                         'phone': user.phone,
+                        'account': user.account,
+                        'bankCard': user.bankCard,
+                        'bank': user.bank,
+                        'accountHolderName': user.accountHolderName,
+                        'idCard': user.idCard,
+                        'age': user.age,
+                        'gender': user.gender,
+                        'last_login': user.last_login,
+                        'date_joined': user.date_joined,
                     },
                     'message': '登录成功',
                 }
@@ -285,16 +294,44 @@ class Server(viewsets.GenericViewSet):
         print("用户请求了注册")
         data = request.data
         userId = data['userId']
-        username = data['name']
+        username = data['username']
         password = data['password']
         phone = data['phone']
-        age = data['age']
-        gender = data['gender']
-        account = data['account']
-        bank = data['bank']
-        bankCard = data['bankCard']
-        accountHolderName = data['accountHolderName']
-        idCard = data['idCard']
+        try:
+            age = data['age']
+        except Exception:
+            age = 0
+
+        try:
+            gender = data['gender']
+        except Exception:
+            gender = '男'
+
+        try:
+            account = data['account']
+        except Exception:
+            account = ""
+
+        try:
+            bank = data['bank']
+        except Exception:
+            bank = ""
+
+        try:
+            bankCard = data['bankCard']
+        except Exception:
+            bankCard = ""
+
+        try:
+            accountHolderName = data['accountHolderName']
+        except Exception:
+            accountHolderName = ""
+
+        try:
+            idCard = data['idCard']
+        except Exception:
+            idCard = ""
+
         try:
             hr = EvaluationUser.objects.create_user(
                 userId=userId,
@@ -441,12 +478,12 @@ class Server(viewsets.GenericViewSet):
                 'message': '更新成功'
             }
             print("用户更新成功")
-        except:
+        except Exception as e:
             resp = {
                 'status': False,
-                'message': '更新失败'
+                'message': '更新失败' + str(e)
             }
-            print("用户更新失败")
+            print("用户更新失败" + str(e))
         return Response(resp)
 
     # 题库相关接口
@@ -468,14 +505,14 @@ class Server(viewsets.GenericViewSet):
         if not file:
             return Response({"status": False, "message": "没有上传文件"})
 
-        post = data.get('post')
+        # post = data.get('post')
         answer = data.get('answer')
 
         try:
             # 创建题目对象
-            question = TestCurriculumVitae.objects.create(
-                post=post,
-                answer=answer,
+            question = CurriculumVitae.objects.create(
+                # post=post,
+                qualified=answer,
                 file=file  # 文件会自动保存到 MEDIA_ROOT 目录
             )
             question.save()
@@ -503,12 +540,12 @@ class Server(viewsets.GenericViewSet):
         print("用户请求了题目更新")
         data = request.data
         questionId = data['id']
-        questionPost = data['post']
-        questionAnswer = data['answer']
+        # questionPost = data['post']
+        questionAnswer = data['qualified']
         try:
-            question = TestCurriculumVitae.objects.get(id=questionId)
-            question.post = questionPost
-            question.answer = questionAnswer
+            question = CurriculumVitae.objects.get(id=questionId)
+            # question.post = questionPost
+            question.qualified = questionAnswer
             question.save()
             resp = {
                 'status': True,
@@ -529,7 +566,7 @@ class Server(viewsets.GenericViewSet):
         data = request.data
         questionId = data['questionId']
         try:
-            question = TestCurriculumVitae.objects.get(id=questionId)
+            question = CurriculumVitae.objects.get(id=questionId)
             question.delete()
             resp = {
                 'status': True,
@@ -548,16 +585,16 @@ class Server(viewsets.GenericViewSet):
     def get_question_list(self, request, *args, **kwargs):
         print("用户请求了获取题目列表")
         try:
-            question_list = TestCurriculumVitae.objects.all()
+            question_list = CurriculumVitae.objects.all()
             questionList = []
             for index, item in enumerate(question_list):
                 post = item.post
-                answer = item.answer
+                qualified = item.qualified
                 file_url = item.file.url
                 questionList.append({
                     'id': item.id,
                     'post': post,
-                    'answer': answer,
+                    'qualified': qualified,
                     'file_url': file_url,
                     'create_time': item.createTime,
                     'num_test': item.numTest,
@@ -570,26 +607,29 @@ class Server(viewsets.GenericViewSet):
                 'data': questionList,
             }
             print("用户获取题目列表成功")
-        except:
+        except Exception as e:
             resp = {
                 'status': False,
-                'data': '获取失败'
+                'data': '获取失败' + str(e)
             }
-            print("用户获取题目列表失败")
+            print("用户获取题目列表失败" + str(e))
         return Response(resp)
 
     @action(detail=False, methods=['get'])
     def get_exam_question_list(self, request, *args, **kwargs):
         print("用户请求了获取测试题目列表")
+        data = request.data
         try:
-            test_question_list = TestCurriculumVitae.getTestCurriculumVitae()
+            question_list = CurriculumVitae.objects.filter()
+            # 随机获取10道题
+            test_question_list = question_list.order_by('?')[:10]
             testQuestionList = []
             for index, item in enumerate(test_question_list):
                 file_url = item.file.url
                 testQuestionList.append({
                     'id': item.id,
                     'post': item.post,
-                    'answer': item.answer,
+                    'qualified': item.qualified,
                     'file_url': file_url,
                     'create_time': item.createTime,
                     'num_test': item.numTest,
@@ -617,7 +657,7 @@ class Server(viewsets.GenericViewSet):
         questionId = data['questionId']
         image = request.FILES['image']
         try:
-            question = TestCurriculumVitae.objects.get(id=questionId)
+            question = CurriculumVitae.objects.get(id=questionId)
             if question.file:
                 if os.path.isfile(question.file.path):
                     os.remove(question.file.path)
@@ -643,9 +683,9 @@ class Server(viewsets.GenericViewSet):
         good_answer = 0
         try:
             for _ in data:
-                question = TestCurriculumVitae.objects.get(id=_['questionId'])
+                question = CurriculumVitae.objects.get(id=_['questionId'])
                 question.numTest += 1
-                if question.answer == _['answer']:
+                if question.qualified == _['answer']:
                     question.passTime += 1
                     good_answer += 1
                 question.save()
@@ -706,7 +746,8 @@ class Server(viewsets.GenericViewSet):
             curriculumVitae = CurriculumVitae.objects.create(
                 interview=interview,
                 post=post,
-                file=file
+                file=file,
+                qualified=True
             )
             curriculumVitae.save()
             resp = {
@@ -1146,6 +1187,28 @@ class Server(viewsets.GenericViewSet):
         try:
             user = EvaluationUser.objects.get(userId=userId)
             images = UserImage.objects.filter(user=user)
+            resp = {
+                'status': True,
+                'data': json.loads(serialize('json', images)),
+                'message': '获取成功'
+            }
+            print("用户获取用户图片成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '获取失败'
+            }
+            print("用户获取用户图片失败")
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def get_curriculumVitae_image(self, request, *args, **kwargs):
+        print("用户请求了获取简历图片")
+        data = request.data
+        userId = data['userId']
+        try:
+            user = EvaluationUser.objects.get(userId=userId)
+            images = CurriculumVitae.objects.filter(user=user)
             resp = {
                 'status': True,
                 'data': json.loads(serialize('json', images)),

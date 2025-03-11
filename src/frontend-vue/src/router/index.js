@@ -30,6 +30,31 @@ const routes = [
         path: '/show-model',
         name: 'ShowModel',
         component: () => import('@/views/ShowModel.vue')
+    },
+    {
+        path: '/admin/online_hr',
+        name: 'AdminOnlineHR',
+        component: () => import('@/views/admin/OnlineHR.vue')
+    },
+    {
+        path: '/admin/interview',
+        name: 'AdminInterview',
+        component: () => import('@/views/admin/Interview.vue')
+    },
+    {
+        path: '/admin/question',
+        name: 'AdminQuestion',
+        component: () => import('@/views/admin/Question.vue')
+    },
+    {
+        path: '/admin/salary',
+        name: 'AdminSalary',
+        component: () => import('@/views/admin/Salary.vue')
+    },
+    {
+        path: '/admin/test_module',
+        name: 'AdminTestModule',
+        component: () => import('@/views/admin/TestModule.vue')
     }
 ]
 

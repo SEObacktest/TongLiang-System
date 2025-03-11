@@ -31,7 +31,7 @@ function open_student_detail(student) {
 }
 
 function open_interview_detail(hr) {
-    console.log(hr)
+    // console.log(hr)
     interviewClicked.value = hr
     isShowHrDetail.value = true
 }

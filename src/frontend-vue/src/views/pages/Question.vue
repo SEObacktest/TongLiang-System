@@ -31,7 +31,7 @@ function open_student_detail(student) {
 }
 
 function open_hr_detail(hr) {
-    console.log(hr)
+    // console.log(hr)
     questionClicked.value = hr
     isShowHrDetail.value = true
 }
@@ -60,7 +60,7 @@ async function is_login() {
         if(user.value.is_admin == true){
             var value = await get_question_list_request()
             if(value.status == false) {
-                alert(data.message)
+                alert(value.data.message)
             } else {
                 questionList.value = value.data
             }

@@ -70,7 +70,7 @@ async function refresh_activities_list(user) {
     }
 }
 function question_click(question) {
-    console.log("用户点击了" + question)
+    // console.log("用户点击了" + question)
     emit('hr_selected', question)
 }
 
@@ -131,7 +131,7 @@ defineExpose({
     <div class="activity-list">
         <div class="hr-header">
             <div class="hr-title">题目ID</div>
-            <div class="hr-title">题目岗位</div>
+            <!-- <div class="hr-title">题目岗位</div> -->
             <div class="hr-title">测试次数</div>
             <div class="hr-title">通过率</div>
             <div class="hr-title">创建时间</div>
@@ -140,7 +140,7 @@ defineExpose({
         <div class="activity" v-for="question in question_list">
             <!-- {{ hr }} -->
             <div class="hr-content">{{ question.id }}</div>
-            <div class="hr-content">{{ question.post }}</div>
+            <!-- <div class="hr-content">{{ question.post }}</div> -->
             <div class="hr-content">{{ question.num_test }}</div>
             <div class="hr-content">{{  question.pass_rate }}</div>
             <div class="hr-content">{{  formulate_time(question.create_time) }}</div>

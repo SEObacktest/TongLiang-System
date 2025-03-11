@@ -2,6 +2,8 @@
 
 import {ref, onMounted, watch} from 'vue'
 
+import router from '../../router';
+
 const emit = defineEmits(['selectItem']);
 
 const sendData = (name) => {
@@ -25,46 +27,46 @@ const list = ref([])
 function getList() {
     if (props.user.is_admin) {
         list.value = [
-            {name: '首页', level: 0, group: 0, selected: true, path: '/'},
-            {name: '在线剪辑', level: 0, group: 1, selected: false, path: '/student'},
-            {name: '在线私域', level: 0, group: 2, selected: false, path: '/activity'},
-            {name: '在线HR', level: 0, group: 3, selected: false, path: '/statistics'},
-            {name: '测试模块', level: 1, group: 3, selected: false, path: '/test'},
-            {name: '题库管理', level: 1, group: 3, selected: false, path: '/question'},
-            {name: '约面管理', level: 1, group: 3, selected: false, path: '/interview'},
-            {name: '报酬管理', level: 1, group: 3, selected: false, path: '/reward'},
+            {name: '首页', level: 0, group: 0, selected: true, path: '/admin'},
+            // {name: '在线剪辑', level: 0, group: 1, selected: false, path: '/student'},
+            // {name: '在线私域', level: 0, group: 2, selected: false, path: '/activity'},
+            {name: '在线HR', level: 0, group: 3, selected: false, path: '/admin/online_hr'},
+            {name: '测试模块', level: 1, group: 3, selected: false, path: '/admin/test_module'},
+            {name: '题库管理', level: 1, group: 3, selected: false, path: '/admin/question'},
+            {name: '约面管理', level: 1, group: 3, selected: false, path: '/admin/interview'},
+            {name: '报酬管理', level: 1, group: 3, selected: false, path: '/admin/salary'},
         ]
     } else {
         list.value = [
             {name: '首页', level: 0, group: 0, selected: true, path: '/'},
         ]
     }
+    selectItem(router.currentRoute.value.path)
 }
 
-function selectItem(index) {
-    sendData(list.value[index].name)
+function selectItem(path) {
+    // console.log(path)
+    const item = list.value.find(item => item.path === path)
+
+    // console.log(item.name)
+    sendData(item.name)
     list.value.forEach((item, i) => {
-        if (i == index) {
+        if (item.path == path) {
             item.selected = true
         } else {
             item.selected = false
         }
-    })
-    let key = false;
-    
-        // list.value.forEach((item, i) => {
-        //     if (!key && item.level == 1 && item.group == list.value[index].group) {
-        //         item.selected = true;
-        //         key = true;
-        //     }
-        // })
-    if (list.value[index].level == 1) {
-        list.value.forEach((item, i) => {
-            if (item.level == 0 && item.group == list.value[index].group) {
-                item.selected = true;
+    })    
+
+    if (item.level == 1) {
+        list.value.forEach((item1, i) => {
+            if (item1.level == 0 && item1.group == item.group) {
+                item1.selected = true;
             }
         })
     }
+    router.push(item.path)
+
 }
 
 function selectedItemGroup(list) {
@@ -93,12 +95,12 @@ watch(() => props.user, (newUser) => {
 <div></div>
 
 <div id='main'>
-    
+    {{ router.path }}
     <div v-for="(item, index) in list" :key="index" >
         <div v-if="(item.selected && item.level == 0)" 
         class="container" 
         :style="[selectedStyle]"
-        @click="selectItem(index)">
+        @click="selectItem(item.path)">
             <div class="title">
                 {{ item.name }}
             </div>
@@ -107,14 +109,14 @@ watch(() => props.user, (newUser) => {
         <div v-else-if="(item.selected && item.level == 1)" 
         class="container" 
         :style="[level1style, selectedStyle]"
-        @click="selectItem(index)">
+        @click="selectItem(item.path)">
             <div class="title">
                 {{ item.name }}
             </div>
         </div>
         <div v-else-if="(item.level == 0)" 
         class="container"
-        @click="selectItem(index)">
+        @click="selectItem(item.path)">
             <div class="title">
                 {{ item.name }}
             </div>
@@ -122,7 +124,7 @@ watch(() => props.user, (newUser) => {
         </div>
         <div v-else-if="(item.group == selectedItemGroup(list))" class="container" 
         :style="[level1style]"
-        @click="selectItem(index)">
+        @click="selectItem(item.path)">
             <div class="title">
                 {{ item.name }}
             </div>

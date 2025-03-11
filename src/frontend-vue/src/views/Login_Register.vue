@@ -63,7 +63,7 @@ async function login() {
 	isLoginPasswordError.value = false
 
 	var data = {
-		'studentId': loginUsername.value,
+		'userId': loginUsername.value,
 		'password': loginPassword.value,
 	}
 
@@ -105,9 +105,9 @@ async function register() {
 	}
 	isRegisterPhoneError.value = false
 	var data = {
-		studentId: registerId.value,
-		username: registerUsername.value,
-		password: registerPassword.value,
+		"userId": registerId.value,
+		"username": registerUsername.value,
+		"password": registerPassword.value,
 		phone: registerPhone.value
 	}
 

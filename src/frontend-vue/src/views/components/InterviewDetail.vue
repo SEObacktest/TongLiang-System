@@ -44,19 +44,19 @@ const image_url = ref()
 
 const hr_list = ref([])
 
-onMounted(async function() {
-    refresh_curriculumVitae_image()
-})
+// onMounted(async function() {
+//     refresh_curriculumVitae_image()
+// })
 
-async function refresh_curriculumVitae_image() {
-    var value = await get_curriculumVitae_image_request({'userId': hrId.value})
-    if(value.status == false) {
-        alert(value.message)
-    } else {
-        console.log(value.data)
-        userImage.value = value.data
-    }
-}
+// async function refresh_curriculumVitae_image() {
+//     var value = await get_curriculumVitae_image_request({'userId': hrId.value})
+//     if(value.status == false) {
+//         alert(value.message)
+//     } else {
+//         console.log(value.data)
+//         userImage.value = value.data
+//     }
+// }
 
 async function delete_interview() {
     if(!confirm('确定删除题目' + interview.value.id + '吗？ 包括相关的图片')) return;
@@ -104,6 +104,7 @@ async function interview_update() {
     if (value.status == true) {
         alert(value.message)
         interview.value = new_interview.value
+        refresh()
     } else {
         alert(value.message)
     }

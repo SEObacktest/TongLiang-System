@@ -89,16 +89,11 @@ class Interview(models.Model):
         }
 
 class CurriculumVitae(models.Model):
-    interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name='CurriculumVitaeInterview')
+    interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name='CurriculumVitaeInterview', default=None, null=True)
     time = models.DateTimeField(auto_now_add=True)
     post = models.CharField(max_length=20)
     file = models.FileField(upload_to='curriculum_vitae_file')
-
-# 题库
-class TestCurriculumVitae(models.Model):
-    post = models.CharField(max_length=20)
-    answer = models.BooleanField()
-    file = models.FileField(upload_to='test_curriculum_vitae_file')
+    qualified = models.BooleanField(default=False)
     createTime = models.DateTimeField(auto_now_add=True)
     numTest = models.IntegerField(default=0)
     passTime = models.IntegerField(default=0)
@@ -107,11 +102,6 @@ class TestCurriculumVitae(models.Model):
         if self.numTest == 0:
             return 0
         return self.passTime / self.numTest
-
-#     随机获取10道题
-    @classmethod
-    def getTestCurriculumVitae(cls):
-        return cls.objects.order_by('?')[:10]  # 直接通过 cls.objects 调用
 
     def delete(self, *args, **kwargs):
         # 在删除数据库记录之前，删除文件
