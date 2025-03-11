@@ -5,15 +5,18 @@ import {ref} from 'vue'
 
 import { formulate_time } from '../../utils/tools';
 
-import {get_hr_list_request, get_interview_list_request} from "@/api/api.js";
+import {
+    get_hr_list_request, 
+    get_salary_list_request,
+} from "@/api/api.js";
 
 const props = defineProps(['user'])
-const emit  = defineEmits(['hr_selected'])
+const emit  = defineEmits(['salary_selected'])
 
 watch(
     () => props.user,
     (newVal, oldVal) => {
-        refresh_interview_list_all(newVal)
+        refresh_salary_list_all(newVal)
     }
 )
 
@@ -22,7 +25,7 @@ watch(
 //     console.log("before mount" + props.user)
 // })
 
-const interview_list = ref([])
+const salary_list = ref([])
 
 const adminId   = ref('')
 const studentId = ref('')
@@ -36,26 +39,13 @@ const passed    = ref('')
 //     "其他": "rgb(255, 225, 0)",
 // })
 
-const interviewList = ref([])
+const salaryList = ref([])
 const hrNameList = ref([])
+const unsettlementList = ref([])
 
 async function refresh_activities_list(user) {
-    if(!user.is_admin) {
-        studentId.value = user.userId
-    } else {
-        var value = await get_hr_list_request()
-        if(value.status == false) {
-            alert(data.message)
-        } else {
-            interviewList.value = value.data
-            interviewList.value.forEach(e => {
-                hrNameList.value[e.pk] = e.fields.username
-            });
-        }
 
-    }
-
-    interview_list.value = await get_interview_list_request({
+    salary_list.value = await get_salary_list_request({
        "studentId": studentId.value,
        "startTime": startTime.value,
        "endTime"  : endTime.value,
@@ -63,21 +53,21 @@ async function refresh_activities_list(user) {
        "passed"   : passed.value,
        "adminId"  : adminId.value,
     })
-    if(interview_list.value.status == false) {
-        alert(interview_list.value.message)
+    if(salary_list.value.status == false) {
+        alert(salary_list.value.message)
     } else {
-        interview_list.value = interview_list.value.data
+        salary_list.value = salary_list.value.data
     }
 }
-function interview_click(interview) {
-    console.log("用户点击了" + interview)
-    emit('hr_selected', interview)
+function salary_click(salary) {
+    console.log("用户点击了" + salary)
+    emit('salary_selected', salary)
 }
 
 
-async function refresh_interview_list_all(user) {
+async function refresh_salary_list_all(user) {
 
-    interview_list.value = await get_interview_list_request({
+    salary_list.value = await get_salary_list_request({
        "studentId": studentId.value,
        "startTime": '*',
        "endTime"  : '*',
@@ -85,10 +75,10 @@ async function refresh_interview_list_all(user) {
        "passed"   : '*',
        "adminId"  : '*',
     })
-    if(interview_list.value.status == false) {
-        alert(interview_list.value.message)
+    if(salary_list.value.status == false) {
+        alert(salary_list.value.message)
     } else {
-        interview_list.value = interview_list.value.data
+        salary_list.value = salary_list.value.data
     }
 }
 
@@ -98,8 +88,8 @@ async function refresh_interview_list_all(user) {
 */
 defineExpose({
     refresh_activities_list
-})
-
+})  
+refresh_activities_list(props.user)
 </script>
 
 <template>
@@ -130,22 +120,25 @@ defineExpose({
     </div>
     <div class="activity-list">
         <div class="hr-header">
-            <div class="hr-title">约面ID</div>
-            <div class="hr-title">约面岗位</div>
-            <div class="hr-title">面试者姓名</div>
-            <div class="hr-title">通勤时间(分钟/M)</div>
-            <div class="hr-title">约面时间</div>
+            <div class="hr-title">HR</div>
+            <div class="hr-title">待结算次数</div>
+            <div class="hr-title">待结算金额</div>
+            <div class="hr-title">结算状态</div>
+            <!-- <div class="hr-title">最后结算时间</div> -->
             <div class="hr-title">操作</div>
         </div>
-        <!-- {{ interview_list }} -->
-        <div class="activity" v-for="interview in interview_list">
+        <!-- {{ salary_list }} -->
+        <div class="activity" v-for="salary in salary_list">
             <!-- {{ hr }} -->
-            <div class="hr-content">{{ interview.id }}</div>
-            <div class="hr-content">{{ interview.post }}</div>
-            <div class="hr-content">{{ interview.name }}</div>
-            <div class="hr-content">{{  interview.commuteTime }}</div>
-            <div class="hr-content">{{  formulate_time(interview.interview_time) }}</div>
-            <div class="hr-content-botton" @click="interview_click(interview)">查看详情</div>
+            <div class="hr-content">{{ salary.hr.username }}</div>
+            <div class="hr-content">{{ salary.salaryInformation.num }}</div>
+            <div class="hr-content">{{ salary.salaryInformation.price }}</div>
+            <div class="hr-content">
+                <img v-if="salary.settlement == 'true'" src="@img/tongguo.png" alt="通过">
+                <img v-else src="@img/dengdaiyanzheng.png" alt="等待">
+            </div>
+            <!-- <div class="hr-content">{{  formulate_time(salary.create_time) }}</div> -->
+            <div class="hr-content-botton" @click="salary_click(salary)">查看详情</div>
         </div>
     </div>
 </div>
@@ -247,6 +240,10 @@ input {
     width: 100px;
     font-size: 16px;
     text-align: center;
+}
+.hr-content img {
+    width: 30px;
+    height: 30px;
 }
 .hr-content-botton {
     width: 80px;

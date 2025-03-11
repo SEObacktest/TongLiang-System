@@ -5,41 +5,35 @@ import { ref } from 'vue'
 import router from '@/router';
 
 import {
-    get_hr_list_request, 
+    get_interview_list_request,
     is_login_request,
     export_excel_request,
 } from '@/api/api';
 
-import ActivityShort  from '../components/ActivityShort.vue';
+import SalaryList from '../components/SalaryList.vue';
+import SalaryDetail from '../components/SalaryDetail.vue';
+import SalaryAll from '../components/SalaryAll.vue';
 
 const user                 = ref("")
 const isShowStudentDetail  = ref(false)
-const isShowAddActivity    = ref(false)
-const isShowActivityDetail = ref(false)
-const activityShort        = ref()
+const isShowAllSalary    = ref(false)
+const isShowSpecificSalaryDetail = ref(false)
+const HRShort        = ref()
 const studentClicked       = ref()
-const activityClicked      = ref()
+const salaryClicked      = ref()
 
-const studentList = ref([])
+const salaryList = ref([])
 const studentNameList = ref([])
-
-const studentStage = ref({
-    0: "群众",
-    1: "团员",
-    2: "积极分子",
-    3: "发展对象",
-    4: "预备党员",
-    5: "党员",
-})
 
 function open_student_detail(student) {
     studentClicked.value = student
     isShowStudentDetail.value = true
 }
 
-function open_activity_detail(activity) {
-    activityClicked.value = activity
-    isShowActivityDetail.value = true
+function open_salary_detail(hr) {
+    console.log(hr)
+    salaryClicked.value = hr
+    isShowSpecificSalaryDetail.value = true
 }
 
 async function exportInformation() {
@@ -64,14 +58,12 @@ async function is_login() {
     if (value.status == true) {
         user.value = value.data
         if(user.value.is_admin == true){
-            var value = await get_hr_list_request()
+            var value = await get_interview_list_request()
             if(value.status == false) {
                 alert(data.message)
             } else {
-                studentList.value = value.data
-                studentList.value.forEach(e => {
-                    studentNameList.value[e.pk] = e.fields.username
-                });
+                salaryList.value = value.data
+                
             }
         }
     } else {
@@ -88,18 +80,28 @@ is_login()
 <div></div>
 
 <div id='main'>
+    <Transition>
+        <div v-if="isShowAllSalary" class="container" :class="{ container_filter: isShowSpecificSalaryDetail }">
+            <SalaryAll :salary="salaryClicked" @close="isShowAllSalary=false"></SalaryAll>
+        </div>
+    </Transition>
+    <Transition>
+        <div v-if="isShowSpecificSalaryDetail" class="container" :class="{ container_filter: isShowSpecificSalaryDetail }">
+            <SalaryDetail :salary="salaryClicked" @close="isShowSpecificSalaryDetail=false"></SalaryDetail>
+        </div>
+    </Transition>
     <div class="activity-container">
         <div class="activity-menu">
             <div class="activity-container-title">报酬管理</div>
             <div class="add-buttons">
                 <div class="add-button" @click="refresh">刷新</div>
-                <div class="add-button" @click="isShowAddActivity=true">添加活动</div>
+                <div class="add-button" @click="isShowAllSalary=true">一键结算</div>
                 <div v-if="user.is_admin" class="add-button" @click="exportInformation">导出信息</div>
             </div>
         </div>
         <div class="split-line"></div>
         <div class="activity-list">
-            <ActivityShort :user="user" ref="activityShort" @activity_clicked="(value) => open_activity_detail(value)"></ActivityShort>
+            <SalaryList :user="user" ref="HRShort" @salary_selected="(value) => open_salary_detail(value)"></SalaryList>
         </div>
     </div>
 </div>
@@ -107,6 +109,21 @@ is_login()
 </template>
 
 <style scoped>
+.container {
+    height: 100vh;
+    width: screen;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+
+}
+.container_filter {
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
+    background-color: rgba(0, 0, 0, 0.3);
+}
 .activity-container {
     width: 800px;
     /* height: 1000px; */

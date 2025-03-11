@@ -124,11 +124,11 @@ function refresh() {
     </div>
     <div class="question-information">
         <div class="question-image">
-            <label v-if="isEdit" class="images">
+            <label v-if="isEdit && question.file_url != null" class="images">
                 <img :src="apiURL + question.file_url" >
                 <input type="file" single accept="image/*" value="" id="image-file" @change="uploadImage($event)">
             </label>
-            <div v-else-if="userImage != ''" class="question-avatar">
+            <div v-else-if="question.file_url != ''" class="question-avatar">
                 <img :src="apiURL + question.file_url" >
             </div>
             <label v-else for="image-file" class="question-avatar">

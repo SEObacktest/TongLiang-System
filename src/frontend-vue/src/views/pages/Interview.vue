@@ -20,7 +20,7 @@ const isShowAddInterview    = ref(false)
 const isShowHrDetail = ref(false)
 const HRShort        = ref()
 const studentClicked       = ref()
-const questionClicked      = ref()
+const interviewClicked      = ref()
 
 const questionList = ref([])
 const studentNameList = ref([])
@@ -30,9 +30,9 @@ function open_student_detail(student) {
     isShowStudentDetail.value = true
 }
 
-function open_hr_detail(hr) {
+function open_interview_detail(hr) {
     console.log(hr)
-    questionClicked.value = hr
+    interviewClicked.value = hr
     isShowHrDetail.value = true
 }
 
@@ -82,7 +82,7 @@ is_login()
     <!-- {{ questionList[0].fields }} -->
     <Transition>
         <div v-if="isShowHrDetail" class="container" :class="{ container_filter: isShowHrDetail }">
-            <InterviewDetail :question="questionClicked" @close="isShowHrDetail=false"></InterviewDetail>
+            <InterviewDetail :interview="interviewClicked" @close="isShowHrDetail=false"></InterviewDetail>
         </div>
     </Transition>
     <Transition>
@@ -95,13 +95,13 @@ is_login()
             <div class="activity-container-title">约面管理</div>
             <div class="add-buttons">
                 <div class="add-button" @click="refresh">刷新</div>
-                <div class="add-button" @click="isShowAddInterview=true">添加题目</div>
+                <div class="add-button" @click="isShowAddInterview=true">添加约面</div>
                 <div v-if="user.is_admin" class="add-button" @click="exportInformation">导出信息</div>
             </div>
         </div>
         <div class="split-line"></div>
         <div class="activity-list">
-            <InterviewList :user="user" ref="HRShort" @hr_selected="(value) => open_hr_detail(value)"></InterviewList>
+            <InterviewList :user="user" ref="HRShort" @hr_selected="(value) => open_interview_detail(value)"></InterviewList>
         </div>
     </div>
 </div>
