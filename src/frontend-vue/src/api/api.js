@@ -131,6 +131,20 @@ export async function delete_question_request(data) {
 
 }
 
+export async function post_question_image_request(questionId, image) {
+    
+    console.log(questionId)
+    console.log(image)
+    let formData = new FormData()
+    formData.append('questionId', questionId)
+    formData.append('image', image)
+
+    let value = await post_file('/api/post_question_image/', formData)
+    console.log(value)
+    return value
+
+}
+
 // 面试管理
 //////////////////////////////////////////////////
 

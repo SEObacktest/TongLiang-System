@@ -6,7 +6,7 @@ import { formulate_time } from '../../utils/tools';
 
 import {
     delete_question_request, 
-    post_user_image_request,
+    post_question_image_request,
     get_user_image_request,
     question_update_request,
 } from '@/api/api';   
@@ -36,20 +36,6 @@ const show_image = ref('')
 const image = ref()
 const image_url = ref()
 
-onMounted(async function() {
-    refresh_user_image()
-})
-
-async function refresh_user_image() {
-    var value = await get_user_image_request({'userId': hrId.value})
-    if(value.status == false) {
-        alert(value.message)
-    } else {
-        console.log(value.data)
-        userImage.value = value.data
-    }
-}
-
 async function delete_question() {
     if(!confirm('确定删除题目' + question.value.id + '吗？ 包括相关的图片')) return;
     var value = await delete_question_request({'questionId': question.value.id})
@@ -63,11 +49,11 @@ async function delete_question() {
     }
 }
 
-async function post_user_image() {
-    var value = await post_user_image_request(hrId.value, image.value)
+async function post_question_image() {
+    var value = await post_question_image_request(question.value.id, image.value)
     if (value.status == true) {
         alert(value.message)
-        refresh_user_image()
+        refresh()
     } else {
         alert(value.message)
     }
@@ -86,7 +72,7 @@ function uploadImage(e) {
         };
         image.value = e.target.files[0];
     }
-    post_user_image()
+    post_question_image()
 }
 
 async function question_update() {

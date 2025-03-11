@@ -1,4 +1,4 @@
-import io
+import io, os
 import json
 from datetime import datetime
 
@@ -611,6 +611,32 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     @action(detail=False, methods=['post'])
+    def post_question_image(self, request, *args, **kwargs):
+        print("用户请求了提交简历")
+        data = request.data
+        questionId = data['questionId']
+        image = request.FILES['image']
+        try:
+            question = TestCurriculumVitae.objects.get(id=questionId)
+            if question.file:
+                if os.path.isfile(question.file.path):
+                    os.remove(question.file.path)
+            question.file = image
+            question.save()
+            resp = {
+                'status': True,
+                'message': '提交成功'
+            }
+            print("用户提交简历成果")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'message': '提交失败' + str(e)
+            }
+            print("用户提交简历失败" + str(e))
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
     def post_exam_result(self, request, *args, **kwargs):
         print("用户请求了提交测试结果")
         data = request.data
@@ -749,7 +775,7 @@ class Server(viewsets.GenericViewSet):
                 curriculumVitae = CurriculumVitae.objects.get(interview=interview)
                 curriculumVitae.file.delete()
                 curriculumVitae.delete()
-            curriculumVitae = UserImage.objects.create(
+            curriculumVitae = CurriculumVitae.objects.create(
                 interview=interview,
                 post=interview.post,
                 file=file
@@ -1069,12 +1095,12 @@ class Server(viewsets.GenericViewSet):
                 'message': '提交成功'
             }
             print("用户提交用户图片成功")
-        except:
+        except Exception as e:
             resp = {
                 'status': False,
-                'message': '提交失败'
+                'message': '提交失败' + str(e)
             }
-            print("用户提交用户图片失败")
+            print("用户提交用户图片失败" + str(e))
         return Response(resp)
 
     @action(detail=False, methods=['post'])
