@@ -7,6 +7,11 @@ const routes = [
         component: () => import('@/views/Home.vue')
     },
     {
+        path: '/admin',
+        name: 'Admin',
+        component: () => import('@/views/Admin.vue')
+    },
+    {
         path: '/login',
         name: 'Login',
         component: () => import('@/views/Login.vue')
@@ -20,11 +25,6 @@ const routes = [
         path: '/admin_login',
         name: 'admin_login',
         component: () => import('@/views/Admin_Login.vue')
-    },
-    {
-        path: '/admin',
-        name: 'Admin',
-        component: () => import('@/views/Admin.vue')
     },
     {
         path: '/show-model',
