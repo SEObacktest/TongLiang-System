@@ -141,11 +141,11 @@ function refresh() {
         <img :src="show_image" alt="image" @click="is_show_image = false">
     </div>
     <div class="navigation-bar">
-        <div class="title">党员简介</div>
+        <div class="title">在线HR简介</div>
     </div>
     <div class="hr-information">
         <div class="hr-left">
-            <label v-if="isEdit" class="images">
+            <label v-if="isEdit && userImage.length != 0" class="images">
                 <img :src="apiURL + userImage[0].fields.image" >
                 <input type="file" single accept="image/*" value="" id="image-file" @change="uploadImage($event)">
             </label>

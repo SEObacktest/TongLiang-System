@@ -101,7 +101,7 @@ function uploadImage(e) {
 <div></div>
 
 <div id='main'>
-    <div class="title">添加活动</div>
+    <div class="title">添加题目</div>
     <div class="show-image" v-if="is_show_image">
         <img :src="show_image" alt="image" @click="is_show_image = false">
     </div>
