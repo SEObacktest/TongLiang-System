@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 import xlwt
 
-from .models import EvaluationUser, Activity, ActivityImage, UserImage, TestCurriculumVitae
+from .models import EvaluationUser, Activity, ActivityImage, UserImage, TestCurriculumVitae, Interview, CurriculumVitae
 
 
 # 参考: https://blog.csdn.net/weixin_55638841/article/details/133996079
@@ -130,6 +130,9 @@ class Server(viewsets.GenericViewSet):
         print("用户成功获取csrf_token值：" + csrf_token)
         return Response(resp)
 
+    #  登录
+    #################################################
+
     @action(detail=False, methods=['get'])
     def is_login(self, request, *args, **kwargs):
         if request.user.is_authenticated:
@@ -162,17 +165,6 @@ class Server(viewsets.GenericViewSet):
                 'message': '还没有登录'
             }
             print("用户还没有登录")
-        return Response(resp)
-
-    @action(detail=False, methods=['get'])
-    def logout(self, request, *args, **kwargs):
-        print("用户请求了登出")
-        logout(request)
-        resp = {
-            'status': True,
-            'message': '用户登出成功'
-        }
-        print("用户登出成功")
         return Response(resp)
 
     @action(detail=False, methods=['post'])
@@ -213,33 +205,6 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     @action(detail=False, methods=['post'])
-    def admin_register(self, request, *args, **kwargs):
-        print("管理员请求了注册")
-        # data = json.loads(request.body)
-        data = request.data
-        userId = data['adminId']
-        username = data['username']
-        password = data['password']
-        phone = data['phone']
-        try:
-            admin = EvaluationUser.objects.create_user(userId=userId, username=username, phone=phone, password=password,
-                                                       isAdmin=True)
-            admin.save()
-            resp = {
-                'status': True,
-                'message': '注册成功'
-            }
-            print("管理员注册成功")
-
-        except:
-            resp = {
-                'status': False,
-                'message': '注册失败'
-            }
-            print("管理员注册失败")
-        return Response(resp)
-
-    @action(detail=False, methods=['post'])
     def student_login(self, request, *args, **kwargs):
         print("用户请求了登录")
         data = request.data
@@ -272,6 +237,47 @@ class Server(viewsets.GenericViewSet):
                 'message': '用户不存在'
             }
             print("用户登录失败，用户不存在")
+        return Response(resp)
+
+    @action(detail=False, methods=['get'])
+    def logout(self, request, *args, **kwargs):
+        print("用户请求了登出")
+        logout(request)
+        resp = {
+            'status': True,
+            'message': '用户登出成功'
+        }
+        print("用户登出成功")
+        return Response(resp)
+
+    # 注册
+    #################################################
+
+    @action(detail=False, methods=['post'])
+    def admin_register(self, request, *args, **kwargs):
+        print("管理员请求了注册")
+        # data = json.loads(request.body)
+        data = request.data
+        userId = data['adminId']
+        username = data['username']
+        password = data['password']
+        phone = data['phone']
+        try:
+            admin = EvaluationUser.objects.create_user(userId=userId, username=username, phone=phone, password=password,
+                                                       isAdmin=True)
+            admin.save()
+            resp = {
+                'status': True,
+                'message': '注册成功'
+            }
+            print("管理员注册成功")
+
+        except:
+            resp = {
+                'status': False,
+                'message': '注册失败'
+            }
+            print("管理员注册失败")
         return Response(resp)
 
     @action(detail=False, methods=['post'])
@@ -318,63 +324,8 @@ class Server(viewsets.GenericViewSet):
             print("用户注册失败" + str(e))
         return Response(resp)
 
-    @action(detail=False, methods=['post'])
-    def hr_update(self, request, *args, **kwargs):
-        print("用户请求了更新")
-        data = request.data
-        userId = data['userId']
-        username = data['username']
-        phone = data['phone']
-        try:
-            hr = EvaluationUser.objects.get(userId=userId)
-            hr.username = username
-            hr.phone = phone
-            hr.age = data['age']
-            hr.gender = data['gender']
-            hr.bankCard = data['bankCard']
-            hr.bank = data['bank']
-            hr.accountHolderName = data['accountHolderName']
-            hr.idCard = data['idCard']
-            hr.account = data['account']
-
-            hr.save()
-            resp = {
-                'status': True,
-                'message': '更新成功'
-            }
-            print("用户更新成功")
-        except:
-            resp = {
-                'status': False,
-                'message': '更新失败'
-            }
-            print("用户更新失败")
-        return Response(resp)
-
-    @action(detail=False, methods=['post'])
-    def question_update(self, request, *args, **kwargs):
-        print("用户请求了题目更新")
-        data = request.data
-        questionId = data['id']
-        questionPost = data['post']
-        questionAnswer = data['answer']
-        try:
-            question = TestCurriculumVitae.objects.get(id=questionId)
-            question.post = questionPost
-            question.answer = questionAnswer
-            question.save()
-            resp = {
-                'status': True,
-                'message': '更新成功'
-            }
-            print("用户更新成功")
-        except:
-            resp = {
-                'status': False,
-                'message': '更新失败'
-            }
-            print("用户更新失败")
-        return Response(resp)
+    # 修改密码
+    #################################################
 
     @action(detail=False, methods=['post'])
     def change_password(self, request, *args, **kwargs):
@@ -406,6 +357,9 @@ class Server(viewsets.GenericViewSet):
             }
             print("用户修改密码失败，用户不存在")
         return Response(resp)
+
+    # 注销账号
+    #################################################
 
     @action(detail=False, methods=['post'])
     def delete_student(self, request, *args, **kwargs):
@@ -440,60 +394,63 @@ class Server(viewsets.GenericViewSet):
             print("管理员删除学生失败")
         return Response(resp)
 
-    @action(detail=False, methods=['post'])
-    def delete_question(self, request, *args, **kwargs):
-        print("管理员请求了删除学生")
-        data = request.data
-        questionId = data['questionId']
+    # 在线HR相关接口
+    #################################################
+
+    @action(detail=False, methods=['get'])
+    def get_hr_list(self, request, *args, **kwargs):
+        print("用户请求了获取在线HR")
         try:
-            question = TestCurriculumVitae.objects.get(id=questionId)
-            question.delete()
+            users = EvaluationUser.objects.all()
+            hr = users.filter(isAdmin=False)
             resp = {
                 'status': True,
-                'message': '删除成功'
+                'data': [_.to_dict() for _ in hr],
             }
-            print("管理员删除学生成功")
+            print("用户获取在线HR列表成功")
         except:
             resp = {
                 'status': False,
-                'message': '删除失败'
+                'data': '获取失败'
             }
-            print("管理员删除学生失败")
+            print("用户获取在线HR列表失败")
         return Response(resp)
 
     @action(detail=False, methods=['post'])
-    def create_activity(self, request, *args, **kwargs):
-        print("用户请求了提交活动")
-        # data = json.loads(request.body)
+    def hr_update(self, request, *args, **kwargs):
+        print("用户请求了更新")
         data = request.data
-        name = data['name']
-        description = data['description']
-        startTime = data['startTime']
-        endTime = data['endTime']
-        location = data['location']
-        studentId = data['studentId']
-        activityType = data['type']
+        userId = data['userId']
+        username = data['username']
+        phone = data['phone']
         try:
-            student = EvaluationUser.objects.get(userId=studentId)
-            activity = Activity.objects.create(name=name, description=description, startTime=startTime, endTime=endTime,
-                                               location=location, student=student, type=activityType)
-            activity.save()
-            student.save()
+            hr = EvaluationUser.objects.get(userId=userId)
+            hr.username = username
+            hr.phone = phone
+            hr.age = data['age']
+            hr.gender = data['gender']
+            hr.bankCard = data['bankCard']
+            hr.bank = data['bank']
+            hr.accountHolderName = data['accountHolderName']
+            hr.idCard = data['idCard']
+            hr.account = data['account']
+
+            hr.save()
             resp = {
                 'status': True,
-                'message': '提交成功',
-                'data': {
-                    'activityId': activity.id
-                }
+                'message': '更新成功'
             }
-            print("用户提交活动成功")
+            print("用户更新成功")
         except:
             resp = {
                 'status': False,
-                'message': '提交失败'
+                'message': '更新失败'
             }
-            print("用户提交活动失败")
+            print("用户更新失败")
         return Response(resp)
+
+    # 题库相关接口
+    #################################################
 
     @action(detail=False, methods=['post'])
     def create_question(self, request, *args, **kwargs):
@@ -542,45 +499,49 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     @action(detail=False, methods=['post'])
-    def post_activity_image(self, request, *args, **kwargs):
-        print("用户请求了提交活动图片")
+    def question_update(self, request, *args, **kwargs):
+        print("用户请求了题目更新")
         data = request.data
-        activityId = data['activityId']
-        image = request.FILES['image']
+        questionId = data['id']
+        questionPost = data['post']
+        questionAnswer = data['answer']
         try:
-            activity = Activity.objects.get(id=activityId)
-            activityImage = ActivityImage.objects.create(activity=activity, image=image)
-            activityImage.save()
+            question = TestCurriculumVitae.objects.get(id=questionId)
+            question.post = questionPost
+            question.answer = questionAnswer
+            question.save()
             resp = {
                 'status': True,
-                'message': '提交成功'
+                'message': '更新成功'
             }
-            print("用户提交活动图片成功")
+            print("用户更新成功")
         except:
             resp = {
                 'status': False,
-                'message': '提交失败'
+                'message': '更新失败'
             }
-            print("用户提交活动图片失败")
+            print("用户更新失败")
         return Response(resp)
 
-    @action(detail=False, methods=['get'])
-    def get_hr_list(self, request, *args, **kwargs):
-        print("用户请求了获取在线HR")
+    @action(detail=False, methods=['post'])
+    def delete_question(self, request, *args, **kwargs):
+        print("管理员请求了删除学生")
+        data = request.data
+        questionId = data['questionId']
         try:
-            users = EvaluationUser.objects.all()
-            hr = users.filter(isAdmin=False)
+            question = TestCurriculumVitae.objects.get(id=questionId)
+            question.delete()
             resp = {
                 'status': True,
-                'data': [_.to_dict() for _ in hr],
+                'message': '删除成功'
             }
-            print("用户获取在线HR列表成功")
+            print("管理员删除学生成功")
         except:
             resp = {
                 'status': False,
-                'data': '获取失败'
+                'message': '删除失败'
             }
-            print("用户获取在线HR列表失败")
+            print("管理员删除学生失败")
         return Response(resp)
 
     @action(detail=False, methods=['get'])
@@ -615,6 +576,232 @@ class Server(viewsets.GenericViewSet):
                 'data': '获取失败'
             }
             print("用户获取题目列表失败")
+        return Response(resp)
+
+    @action(detail=False, methods=['get'])
+    def get_exam_question_list(self, request, *args, **kwargs):
+        print("用户请求了获取测试题目列表")
+        try:
+            test_question_list = TestCurriculumVitae.getTestCurriculumVitae()
+            testQuestionList = []
+            for index, item in enumerate(test_question_list):
+                file_url = item.file.url
+                testQuestionList.append({
+                    'id': item.id,
+                    'post': item.post,
+                    'answer': item.answer,
+                    'file_url': file_url,
+                    'create_time': item.createTime,
+                    'num_test': item.numTest,
+                    'pass_time': item.passTime,
+                    'pass_rate': item.getPassRate()
+                })
+
+            resp = {
+                'status': True,
+                'data': testQuestionList,
+            }
+            print("用户获取测试题目列表成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'data': '获取失败' + str(e)
+            }
+            print("用户获取测试题目列表失败" + str(e))
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def post_exam_result(self, request, *args, **kwargs):
+        print("用户请求了提交测试结果")
+        data = request.data
+        good_answer = 0
+        try:
+            for _ in data:
+                question = TestCurriculumVitae.objects.get(id=_['questionId'])
+                question.numTest += 1
+                if question.answer == _['answer']:
+                    question.passTime += 1
+                    good_answer += 1
+                question.save()
+            resp = {
+                'status': True,
+                'data': good_answer,
+                'message': '提交答案成功'
+            }
+            print("用户提交提交答案成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'message': '提交答案失败' + str(e)
+            }
+            print("用户提交答案失败" + str(e))
+        return Response(resp)
+
+    # 约面管理相关接口
+    #################################################
+
+    @action(detail=False, methods=['post'])
+    def create_interview(self, request, *args, **kwargs):
+        print("用户请求了新建面试")
+
+        # 读取并解析上传的 JSON 文件
+        json_file = request.FILES.get("json")
+        if json_file:
+            data = json.loads(json_file.read().decode('utf-8'))
+        else:
+            return Response({"status": False, "message": "没有上传JSON文件"})
+
+        # 获取上传的文件
+        file = request.FILES.get("file")
+        if not file:
+            return Response({"status": False, "message": "没有上传文件"})
+        #         'name'       : interview_name.value,
+        #         'post'       : interview_post.value,
+        #         'commuteTime': inetrvew_commute_time.value,
+        #         'time'       : interview_time.value,
+        #         'hr'         : hr_username.value,
+        name = data.get('name')
+        post = data.get('post')
+        commuteTime = data.get('commuteTime')
+        time = data.get('time')
+        hr = EvaluationUser.objects.get(username=data.get('hr'))
+
+        try:
+            # 创建题目对象
+            interview = Interview.objects.create(
+                interviewee=name,
+                interviewTime=time,
+                post=post,
+                user=hr,
+                commuteTime=commuteTime
+            )
+            interview.save()
+
+            curriculumVitae = CurriculumVitae.objects.create(
+                interview=interview,
+                post=post,
+                file=file
+            )
+            curriculumVitae.save()
+            resp = {
+                'status': True,
+                'message': '新建题目成功',
+                'data': {
+                    'questionId': interview.id
+                }
+            }
+            print("用户新建题目成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'message': '新建题目失败',
+                'error': str(e)  # 将错误信息返回，方便调试
+            }
+            print("用户新建题目失败:", e)
+
+        return Response(resp)
+
+    @action(detail=False, methods=['get'])
+    def get_interview_list(self, request, *args, **kwargs):
+        print("用户请求了获取约面列表")
+        try:
+            interview_list = Interview.objects.all()
+            interviewList = []
+            for index, item in enumerate(interview_list):
+                file = CurriculumVitae.objects.get(interview=item)
+                file_url = file.file.url
+                interviewList.append({
+                    'id': item.id,
+                    'post': item.post,
+                    'name': item.interviewee,
+                    'hr': item.user.username,
+                    'interview_time': item.interviewTime,
+                    'file_url': file_url,
+                    'create_time': item.createTime,
+                    'commuteTime': item.commuteTime,
+                    'isAgreed': item.isAgreed,
+                    'isArrived': item.isArrived,
+                    'settlement': item.settlement
+                })
+            resp = {
+                'status': True,
+                'data': interviewList,
+            }
+            print("用户获取约面列表成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'data': '获取失败' + str(e)
+            }
+            print("用户获取约面列表失败" + str(e))
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def post_curriculumVitae_image(self, request, *args, **kwargs):
+        print("用户请求了提交约面者简历")
+        data = request.data
+        interviewId = data['interviewId']
+        file = request.FILES['file']
+        try:
+            interview = Interview.objects.get(id=interviewId)
+            if CurriculumVitae.objects.filter(interview=interview).count() > 0:
+                curriculumVitae = CurriculumVitae.objects.get(interview=interview)
+                curriculumVitae.file.delete()
+                curriculumVitae.delete()
+            curriculumVitae = UserImage.objects.create(
+                interview=interview,
+                post=interview.post,
+                file=file
+            )
+            curriculumVitae.save()
+            resp = {
+                'status': True,
+                'message': '提交成功'
+            }
+            print("用户提交面试者简历成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '提交失败'
+            }
+            print("用户提交面试者简历成功失败")
+        return Response(resp)
+
+    # 活动相关接口（已废弃）
+    #################################################
+
+    @action(detail=False, methods=['post'])
+    def create_activity(self, request, *args, **kwargs):
+        print("用户请求了提交活动")
+        # data = json.loads(request.body)
+        data = request.data
+        name = data['name']
+        description = data['description']
+        startTime = data['startTime']
+        endTime = data['endTime']
+        location = data['location']
+        studentId = data['studentId']
+        activityType = data['type']
+        try:
+            student = EvaluationUser.objects.get(userId=studentId)
+            activity = Activity.objects.create(name=name, description=description, startTime=startTime, endTime=endTime,
+                                               location=location, student=student, type=activityType)
+            activity.save()
+            student.save()
+            resp = {
+                'status': True,
+                'message': '提交成功',
+                'data': {
+                    'activityId': activity.id
+                }
+            }
+            print("用户提交活动成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '提交失败'
+            }
+            print("用户提交活动失败")
         return Response(resp)
 
     @action(detail=False, methods=['post'])
@@ -676,6 +863,29 @@ class Server(viewsets.GenericViewSet):
                 'message': '获取失败'
             }
             print("用户获取活动图片失败")
+        return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def post_activity_image(self, request, *args, **kwargs):
+        print("用户请求了提交活动图片")
+        data = request.data
+        activityId = data['activityId']
+        image = request.FILES['image']
+        try:
+            activity = Activity.objects.get(id=activityId)
+            activityImage = ActivityImage.objects.create(activity=activity, image=image)
+            activityImage.save()
+            resp = {
+                'status': True,
+                'message': '提交成功'
+            }
+            print("用户提交活动图片成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '提交失败'
+            }
+            print("用户提交活动图片失败")
         return Response(resp)
 
     @action(detail=False, methods=['post'])
@@ -744,6 +954,9 @@ class Server(viewsets.GenericViewSet):
             }
             print("用户查看活动失败")
         return Response(resp)
+
+    # 工具接口
+    #################################################
 
     @action(detail=False, methods=['post'])
     def post_user_image(self, request, *args, **kwargs):
