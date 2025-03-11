@@ -198,6 +198,14 @@ export async function post_settlement_request(data) {
     
 }
 
+export async function post_settle_all_request(data) {
+    
+    let value = await post('/api/post_settle_all/', data)
+    console.log(value)
+    return value
+    
+}
+
 // 活动管理（已废弃）
 //////////////////////////////////////////////////
 
