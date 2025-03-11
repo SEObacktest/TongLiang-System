@@ -25,6 +25,9 @@ class EvaluationUser(AbstractUser):
             return 0
         return Interview.objects.all().filter(user=self).count()
 
+    def getUnSettlementInterview(self):
+        return Interview.objects.all().filter(user=self).filter(settlement=False)
+
     def to_dict(self):
         return {
             "userId": self.userId,
@@ -59,15 +62,15 @@ class Activity(models.Model):
 
 # 约面试
 class Interview(models.Model):
-    interviewId = models.CharField(max_length=20, unique=True)
+    interviewee = models.CharField(max_length=20, default='')
     interviewTime = models.DateTimeField()
     post = models.CharField(max_length=20)
     user = models.ForeignKey(EvaluationUser, on_delete=models.CASCADE, related_name='CurriculumVitaeUser', default=None)
-    curriculumVitae = models.ForeignKey('CurriculumVitae', on_delete=models.CASCADE, related_name='CurriculumVitae', default=None, null=True)
     isAgreed = models.BooleanField(default=False)
     isArrived = models.BooleanField(default=False)
     commuteTime = models.CharField(max_length=20)
     createTime = models.DateTimeField(auto_now_add=True)
+    settlement = models.BooleanField(default=False)
 
 class CurriculumVitae(models.Model):
     interview = models.ForeignKey(Interview, on_delete=models.CASCADE, related_name='CurriculumVitaeInterview')
@@ -90,8 +93,9 @@ class TestCurriculumVitae(models.Model):
         return self.passTime / self.numTest
 
 #     随机获取10道题
-    def getTestCurriculumVitae(self):
-        return self.objects.all().order_by('?')[:10]
+    @classmethod
+    def getTestCurriculumVitae(cls):
+        return cls.objects.order_by('?')[:10]  # 直接通过 cls.objects 调用
 
     def delete(self, *args, **kwargs):
         # 在删除数据库记录之前，删除文件
