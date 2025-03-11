@@ -6,7 +6,7 @@
 <div></div>
 
 <div id='main'>
-    <div class="logo">学生党员评价量化考核系统</div>
+    <div class="logo">同梁在线业务系统</div>
 </div>
 
 </template>

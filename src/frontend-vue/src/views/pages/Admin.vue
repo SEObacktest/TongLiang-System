@@ -37,7 +37,7 @@ is_login()
 
 <div id='main'>
     <div class="container">
-        <h1>欢迎使用在线HR系统</h1>
+        <h1>欢迎使用同梁在线业务系统</h1>
         <h2>当前用户: {{ user.username }}</h2>
     </div>
 </div>
@@ -48,8 +48,28 @@ is_login()
 #main {
     width: 100%;
     height: 1000px;
-    margin-top: 100px;
+    /* margin-top: 100px; */
     display: flex;
     justify-content: center;
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px;
+    padding: 20px;
+    width: 400px;
+    height: 300px;
+    /* 毛玻璃效果 */
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1)); 
+    backdrop-filter: blur(15px) saturate(150%);
+    -webkit-backdrop-filter: blur(15px) saturate(150%);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    color: black;
+        
+    border-radius: 20%;
 }
 </style>

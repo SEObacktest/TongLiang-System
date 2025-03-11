@@ -42,7 +42,7 @@ const pageList = shallowRef([
 
 const user                 = ref("")
 
-const selectedName = ref("报酬管理")
+const selectedName = ref("首页")
 
 function refresh() {
     window.location.reload()

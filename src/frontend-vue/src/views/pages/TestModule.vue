@@ -94,7 +94,7 @@ is_login()
             <div class="add-buttons">
                 <div class="add-button" @click="refresh">刷新</div>
                 <div class="add-button" @click="isShowAddActivity=true">添加活动</div>
-                <div v-if="user.is_admin" class="add-button" @click="exportInformation">导出信息</div>
+                <!-- <div v-if="user.is_admin" class="add-button" @click="exportInformation">导出信息</div> -->
             </div>
         </div>
         <div class="split-line"></div>
