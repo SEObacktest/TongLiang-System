@@ -15,3 +15,6 @@ Content-Type: application/json
     "answer": false
   }
 ]
+
+###
+GET http://localhost:8000/api/get_salary_list/
