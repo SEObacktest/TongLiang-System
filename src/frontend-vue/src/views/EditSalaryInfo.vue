@@ -12,11 +12,14 @@
           <InputField label="开户行" v-model="formData.bank" placeholder="请输入开户行" />
           <InputField label="电话" v-model="formData.phone" type="tel" placeholder="请输入电话" />
 
-          <!-- 新增输入框：所在城市 -->
+          <!-- 新增账户持有人字段 -->
+          <InputField label="账户持有人" v-model="formData.accountHolderName" placeholder="请输入账户持有人" />
+
+          <!-- 新增字段：所在城市 -->
           <InputField label="所在城市" v-model="formData.city" placeholder="请输入所在城市" />
 
-          <!-- 新增出生日期，让用户选择 -->
-          <InputField label="出生日期" v-model="formData.birthDate" type="date" />
+          <!-- 原有的出生日期输入框已删除，新增年龄输入框 -->
+          <InputField label="年龄" v-model="formData.age" type="number" placeholder="请输入年龄" />
 
           <!-- 新增下拉菜单选择性别 -->
           <label for="genderSelect">性别：</label>
@@ -27,6 +30,7 @@
             <option value="未注明">N/A</option>
           </select>
 
+          <!-- 移动保存和取消按钮到选择性别下面 -->
           <SubmitButton label="保存" @click="submitForm" />
           <SubmitButton label="取消" class="cancel" @click="$router.push('/salary-form')" />
         </FormCard>
@@ -61,38 +65,12 @@ export default {
         phone: "",
         bankCard: "",
         bank: "",
-        birthDate: "",   // 新增字段：出生年月日
-        gender: "" ,      // 新增字段：性别
-        city: ""
+        age: "",
+        gender: "",
+        city: "",
+        accountHolderName: "" 
       }
     };
-  },
-  computed: {
-    // 根据出生年月日，自动计算年龄
-    computedAge() {
-      if (!this.formData.birthDate) return 0; // 如果还没选日期，就返回 0 或你想给的默认值
-
-      const birth = new Date(this.formData.birthDate);
-      if (isNaN(birth.getTime())) {
-        // 如果传进来的日期无效
-        return 0;
-      }
-
-      // 计算“当前年份 - 出生年份”，再考虑月份/日的影响
-      // 简单做法：按年度来算
-      const now = new Date();
-      let age = now.getFullYear() - birth.getFullYear();
-
-      // 如果还没到生日就减一岁
-      const nowMonthDay = (now.getMonth() + 1) * 100 + now.getDate();
-      const birthMonthDay = (birth.getMonth() + 1) * 100 + birth.getDate();
-      if (nowMonthDay < birthMonthDay) {
-        age -= 1;
-      }
-
-      // 确保是一个整数
-      return age < 0 ? 0 : age;
-    }
   },
   async created() {
     // 组件加载时，先获取用户登录状态
@@ -106,11 +84,19 @@ export default {
           // 未登录则跳转
           this.$router.push("/login_register");
         } else {
-          // 填充表单
-          this.formData.userId = resp.data.userId;
-          this.formData.username = resp.data.username;
-          this.formData.phone = resp.data.phone;
-          // 如果后端也存了 birthDate、gender，可以在这里一起赋值
+          // 填充表单，将所有字段都填上
+          this.formData.userId = resp.data.userId || "";
+          this.formData.username = resp.data.username || "";
+          this.formData.phone = resp.data.phone || "";
+          this.formData.bankCard = resp.data.bankCard || "";
+          this.formData.bank = resp.data.bank || "";
+          this.formData.accountHolderName = resp.data.accountHolderName || "";
+          this.formData.city = resp.data.city || "";
+          this.formData.age = resp.data.age || "";
+          this.formData.gender = resp.data.gender || "";
+          this.formData.idCard = resp.data.idCard || "";
+          this.formData.account = resp.data.account || "";
+          console.log(this.formData)
         }
       } catch (error) {
         alert("加载用户信息失败，请检查网络或重新登录");
@@ -121,35 +107,22 @@ export default {
 
     async submitForm() {
       try {
-        // 把computedAge 作为数字传给后端
-        const ageNumber = Number(this.computedAge);
-
-        // 拼接后端需要的payload
+        // 构造 payload，确保所有字段都有值
         const payload = {
           userId: this.formData.userId,
-          username: this.formData.username,
-          phone: this.formData.phone,
-          bankCard: this.formData.bankCard,
-          bank: this.formData.bank,
-          // 关键点：后端要 age 是数字，不要传空字符串
-          age: ageNumber,            
-          gender: this.formData.gender || "",
-          // 新增字段：city
-          city: this.formData.city || "",
-          
-          // 如果后端不需要存 birthDate 原数据，就不传
-          // 或者后端若也需要 birthDate，就加上
-          // birthDate: this.formData.birthDate,
-
-          // 你原本的字段
-          accountHolderName: this.formData.accountHolderName || "",
-          idCard: this.formData.idCard || "",
-          account: this.formData.account || ""
+          username: this.formData.username?.toString().trim() || "",
+          phone: this.formData.phone?.toString().trim() || "",
+          bankCard: this.formData.bankCard?.toString().trim() || "",
+          bank: this.formData.bank?.toString().trim() || "",
+          gender: this.formData.gender?.toString().trim() || "",
+          city: this.formData.city?.toString().trim() || "",
+          accountHolderName: this.formData.accountHolderName?.toString().trim() || "",
+          idCard: (this.formData.idCard && this.formData.idCard.toString().trim()) || "",
+          account: (this.formData.account && this.formData.account.toString().trim()) || "",
+          age: this.formData.age.toString().trim() !== "" ? Number(this.formData.age) : 0
         };
 
         console.log("即将提交:", payload);
-
-        // 发请求给后端
         const response = await hr_update_request(payload);
         if (response.status) {
           alert("信息已更新");
