@@ -96,7 +96,7 @@ refresh_activities_list(props.user)
 <div></div>
 <div id='main'>
     <div class="head">
-        <div class="check-activity">
+        <!-- <div class="check-activity">
             <div v-if="user.is_admin" class="check-activity-item">
                 <div class="check-activity-item-label">手机号</div>
                 <div class="check-activity-item-input">
@@ -116,7 +116,7 @@ refresh_activities_list(props.user)
                 </div>
             </div>
         </div>
-        <div class="search" @click="refresh_activities_list(props.user)">查询</div>
+        <div class="search" @click="refresh_activities_list(props.user)">查询</div> -->
     </div>
     <div class="activity-list">
         <div class="hr-header">
