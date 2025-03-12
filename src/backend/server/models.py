@@ -10,6 +10,7 @@ from django.dispatch.dispatcher import receiver
 class EvaluationUser(AbstractUser):
     userId = models.CharField(max_length=20, unique=True)
     phone = models.CharField(max_length=20)
+    city = models.CharField(max_length=20, default="")
     isAdmin = models.BooleanField(default=False)
     bankCard = models.CharField(max_length=30, default="")
     bank = models.CharField(max_length=30, default="")
@@ -26,7 +27,10 @@ class EvaluationUser(AbstractUser):
         return Interview.objects.all().filter(user=self).count()
 
     def getUnSettlementInterview(self):
-        return Interview.objects.all().filter(user=self).filter(settlement=False)
+        return Interview.objects.all().filter(user=self).filter(settlement=False, isArrived=True)
+
+    def getSettlementInterview(self):
+        return Interview.objects.all().filter(user=self).filter(settlement=True)
 
     def to_dict(self):
         return {
@@ -44,6 +48,9 @@ class EvaluationUser(AbstractUser):
             "last_login": self.last_login,
             "date_joined": self.date_joined,
             "interviewCount": self.getInterviewCount(),
+            "unSettlementInterview": self.getUnSettlementInterview().count(),
+            "settlementInterview": self.getSettlementInterview().count(),
+            "city": self.city,
         }
 
 class Activity(models.Model):
@@ -86,6 +93,27 @@ class Interview(models.Model):
             'isAgreed': self.isAgreed,
             'isArrived': self.isArrived,
             'settlement': self.settlement
+        }
+
+class Settlement(models.Model):
+    user = models.ForeignKey(EvaluationUser, on_delete=models.CASCADE, related_name='SettlementUser', default=None)
+    settlementTime = models.DateTimeField(auto_now_add=True)
+    amount = models.FloatField()
+    bankCard = models.CharField(max_length=30)
+    bank = models.CharField(max_length=30)
+    accountHolderName = models.CharField(max_length=30)
+    idCard = models.CharField(max_length=30)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'hr': self.user.username,
+            'settlement_time': self.settlementTime,
+            'amount': self.amount,
+            'bankCard': self.bankCard,
+            'bank': self.bank,
+            'accountHolderName': self.accountHolderName,
+            'idCard': self.idCard,
         }
 
 class CurriculumVitae(models.Model):
