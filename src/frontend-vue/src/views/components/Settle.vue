@@ -30,6 +30,8 @@ async function settle_account() {
 
     const value = await post_settlement_request({
         'interviewIdList': interviewIdList,
+        'hrId': hr.userId,
+        'num': interviewList.length,
     })
 
     if (value.status == true) {
