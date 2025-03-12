@@ -154,6 +154,12 @@ class Server(viewsets.GenericViewSet):
                         'userId': request.user.userId,
                         'username': request.user.username,
                         'phone': request.user.phone,
+                        'bankCard': request.user.bankCard,
+                        'bank': request.user.bank,
+                        'accountHolderName': request.user.accountHolderName,
+                        'city': request.user.city,
+                        'age': request.user.age,
+                        'gender': request.user.gender,
                         'is_admin': False
                     },
                     'message': '已经登录了'
