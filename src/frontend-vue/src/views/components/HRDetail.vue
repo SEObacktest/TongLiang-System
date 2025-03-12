@@ -33,6 +33,7 @@ const new_hr = ref({
     'bank': hr.value.bank,
     'accountHolderName': hr.value.accountHolderName,
     'idCard': hr.value.idCard,
+    'city': hr.value.city,
 })
 const hrId = ref(props.hr.userId)
 
@@ -113,7 +114,8 @@ async function hr_update() {
         new_hr.value.accountHolderName == hr.value.accountHolderName &&
         new_hr.value.bankCard == hr.value.bankCard &&
         new_hr.value.bank == hr.value.bank &&
-        new_hr.value.idCard == hr.value.idCard
+        new_hr.value.idCard == hr.value.idCard &&
+        new_hr.value.city == hr.value.city
     ) {
         return
     }
@@ -160,6 +162,7 @@ function refresh() {
         <div v-if="isEdit" class="hr-right">
             <form>
                 <div class="hr-name">姓名: <input type="text" v-model="new_hr.username"></div>
+                <div class="hr-city">所在城市: <input type="text" v-model="new_hr.city"></div>
                 <!-- <div class="hr-id">用户ID: <input type="text" v-model="new_hr.userId"></div> -->
                 <div class="hr-phone">电话号码: <input type="text" v-model="new_hr.phone"></div>
                 <div class="hr-age">年龄: <input type="text" v-model="new_hr.age"></div>
@@ -183,17 +186,17 @@ function refresh() {
         </div>
         <div v-else class="hr-right">
             <div class="hr-name">姓名: {{ hr.username }}</div>
-            <div class="hr-id">用户ID: {{ hr.userId }}</div>
+            <div class="hr-id">所在城市: {{ hr.city }}</div>
             <div class="hr-phone">电话号码: {{ hr.phone }}</div>
             <!-- <div class="hr-score">已面个数: {{  }}</div> -->
             <div class="hr-age">年龄: {{ hr.age }}</div>
             <div class="hr-gender">性别: {{ hr.gender }}</div>
             <div class="hr-account">管理账号: {{ hr.account }}</div>
-            <div class="hr-bank-card">银行卡号: {{ hr.bankCard }}</div>
-            <div class="hr-bank">开户行: {{ hr.bank }}</div>
+            <!-- <div class="hr-bank-card">银行卡号: {{ hr.bankCard }}</div> -->
+            <!-- <div class="hr-bank">开户行: {{ hr.bank }}</div> -->
             <div class="hr-account-holder-name">开户人姓名: {{ hr.accountHolderName }}</div>
-            <div class="hr-id-card">身份证号: {{ hr.idCard }}</div>
-            <div class="hr-register-time">注册时间: {{ formulate_time(hr.date_joined) }}</div>
+            <!-- <div class="hr-id-card">身份证号: {{ hr.idCard }}</div> -->
+            <!-- <div class="hr-register-time">注册时间: {{ formulate_time(hr.date_joined) }}</div> -->
             <div class="hr-last-login">上次登录时间: {{ formulate_time(hr.last_login) }}</div>
         </div>
     </div>
