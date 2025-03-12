@@ -55,19 +55,19 @@ async function refresh_activities_list(user) {
 
     }
 
-    activity_list.value = await get_activities_list_request({
-       "studentId": studentId.value,
-       "startTime": startTime.value,
-       "endTime"  : endTime.value,
-       "certified": certified.value,
-       "passed"   : passed.value,
-       "adminId"  : adminId.value,
-    })
-    if(activity_list.value.status == false) {
-        alert(activity_list.value.message)
-    } else {
-        activity_list.value = activity_list.value.data
-    }
+    // activity_list.value = await get_activities_list_request({
+    //    "studentId": studentId.value,
+    //    "startTime": startTime.value,
+    //    "endTime"  : endTime.value,
+    //    "certified": certified.value,
+    //    "passed"   : passed.value,
+    //    "adminId"  : adminId.value,
+    // })
+    // if(activity_list.value.status == false) {
+    //     alert(activity_list.value.message)
+    // } else {
+    //     activity_list.value = activity_list.value.data
+    // }
 }
 function hr_click(hr) {
     console.log("用户点击了" + hr)
@@ -95,19 +95,19 @@ async function refresh_activities_list_all(user) {
     // console.log("certified: " + certified.value)
     // console.log("passed: " + passed.value)
     // console.log("adminId: " + adminId.value)
-    activity_list.value = await get_activities_list_request({
-       "studentId": studentId.value,
-       "startTime": '*',
-       "endTime"  : '*',
-       "certified": '*',
-       "passed"   : '*',
-       "adminId"  : '*',
-    })
-    if(activity_list.value.status == false) {
-        alert(activity_list.value.message)
-    } else {
-        activity_list.value = activity_list.value.data
-    }
+    // activity_list.value = await get_activities_list_request({
+    //    "studentId": studentId.value,
+    //    "startTime": '*',
+    //    "endTime"  : '*',
+    //    "certified": '*',
+    //    "passed"   : '*',
+    //    "adminId"  : '*',
+    // })
+    // if(activity_list.value.status == false) {
+    //     alert(activity_list.value.message)
+    // } else {
+    //     activity_list.value = activity_list.value.data
+    // }
 }
 
 /*
