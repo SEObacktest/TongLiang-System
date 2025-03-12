@@ -469,3 +469,11 @@ export async function export_excel_request(data) {
 //     console.log(patients)
 //     return patients
 // }
+
+//得到用户信息
+export async function user_info_request(data){
+
+    let value = await get('/api/user_info/', data)
+    console.log(value)
+    return value
+}

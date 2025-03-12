@@ -60,6 +60,26 @@ const routes = [
         path: '/admin/settlement',
         name: 'AdminSettlement',
         component: () => import('@/views/admin/Settlement.vue')
+    },
+    { 
+        path: "/salary-form", 
+        name: 'SalaryForm',
+        component: () => import('@/views/SalaryForm.vue')
+    },
+    { 
+        path: "/salary-detail", 
+        name: 'SalaryDetail' ,
+        component: () => import('@/views/SalaryDetail.vue')
+    },
+    {   
+        path: '/edit-salary-info', 
+        name: 'EditSalaryInfo', 
+        component: () => import('@/views/EditSalaryInfo.vue')
+    },
+    { 
+        path: '/salary-transactions', 
+        name: 'SalaryTransactions', 
+        component: () => import('@/views/SalaryTransactions.vue')
     }
 ]
 
