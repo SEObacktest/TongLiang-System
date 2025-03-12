@@ -15,7 +15,7 @@ from rest_framework.response import Response
 
 import xlwt
 
-from .models import EvaluationUser, Activity, ActivityImage, UserImage, Interview, CurriculumVitae
+from .models import EvaluationUser, Activity, ActivityImage, UserImage, Interview, CurriculumVitae, Settlement
 
 
 # 参考: https://blog.csdn.net/weixin_55638841/article/details/133996079
@@ -472,6 +472,7 @@ class Server(viewsets.GenericViewSet):
             hr.accountHolderName = data['accountHolderName']
             hr.idCard = data['idCard']
             hr.account = data['account']
+            hr.city = data['city']
 
             hr.save()
             resp = {
@@ -753,19 +754,19 @@ class Server(viewsets.GenericViewSet):
             curriculumVitae.save()
             resp = {
                 'status': True,
-                'message': '新建题目成功',
+                'message': '新建约面成功',
                 'data': {
                     'questionId': interview.id
                 }
             }
-            print("用户新建题目成功")
+            print("用户新建约面成功")
         except Exception as e:
             resp = {
                 'status': False,
-                'message': '新建题目失败',
+                'message': '新建约面失败',
                 'error': str(e)  # 将错误信息返回，方便调试
             }
-            print("用户新建题目失败:", e)
+            print("用户新建约面失败:", e)
 
         return Response(resp)
 
@@ -878,7 +879,7 @@ class Server(viewsets.GenericViewSet):
     def get_salary_list(self, request, *args, **kwargs):
         print("用户请求了获取未结算列表")
         try:
-            interview_list = Interview.objects.filter(settlement=False)
+            interview_list = Interview.objects.filter(settlement=False, isArrived=True)
             salaryList = []
             hrList = []
             for index, item in enumerate(interview_list):
@@ -923,11 +924,22 @@ class Server(viewsets.GenericViewSet):
         print("用户请求了结算")
         data = request.data
         interviewIdList = data['interviewIdList']
+        hr = EvaluationUser.objects.get(userId=data['hrId'])
+        num = int(data['num'])
         try:
             for interviewId in interviewIdList:
                 interview = Interview.objects.get(id=interviewId)
                 interview.settlement = True
                 interview.save()
+            settlement = Settlement.objects.create(
+                user=hr,
+                amount=num * 100,
+                bankCard=hr.bankCard,
+                bank=hr.bank,
+                accountHolderName=hr.accountHolderName,
+                idCard=hr.idCard,
+            )
+            settlement.save()
             resp = {
                 'status': True,
                 'message': '结算成功'
@@ -945,10 +957,25 @@ class Server(viewsets.GenericViewSet):
     def post_settle_all(self, request, *args, **kwargs):
         print("用户请求了全部结算")
         try:
-            interview_list = Interview.objects.filter(settlement=False)
-            for interview in interview_list:
-                interview.settlement = True
-                interview.save()
+
+            hrList = EvaluationUser.objects.all()
+            for hr in hrList:
+                num = hr.getUnSettlementInterview().count()
+                if num > 0:
+                    settlement = Settlement.objects.create(
+                        user=hr,
+                        amount=num * 100,
+                        bankCard=hr.bankCard,
+                        bank=hr.bank,
+                        accountHolderName=hr.accountHolderName,
+                        idCard=hr.idCard,
+                    )
+                    settlement.save()
+                    interview_list = Interview.objects.filter(user=hr, settlement=False)
+                    for interview in interview_list:
+                        interview.settlement = True
+                        interview.save()
+
             resp = {
                 'status': True,
                 'message': '全部结算成功'
@@ -960,6 +987,30 @@ class Server(viewsets.GenericViewSet):
                 'message': '全部结算失败' + str(e)
             }
             print("用户全部结算失败" + str(e))
+        return Response(resp)
+
+    # 流水管理接口
+    #################################################
+
+    @action(detail=False, methods=['get'])
+    def get_settlement_list(self, request, *args, **kwargs):
+        print("用户请求了获取流水列表")
+        try:
+            settlement_list = Settlement.objects.all()
+            settlementList = []
+            for index, item in enumerate(settlement_list):
+                settlementList.append(item.to_dict())
+            resp = {
+                'status': True,
+                'data': settlementList,
+            }
+            print("用户获取流水列表成功")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'data': '获取失败' + str(e)
+            }
+            print("用户获取流水列表失败" + str(e))
         return Response(resp)
 
     # 活动相关接口（已废弃）
