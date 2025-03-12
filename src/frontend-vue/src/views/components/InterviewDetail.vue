@@ -205,6 +205,13 @@ getHRList()
             <div v-else class="interview-state">
                 <img src="@img/butongguo.png" alt="错误">
             </div>
+            <div class="interview-settlement">是否结算</div>
+            <div v-if="interview.settlement == true" class="interview-state">
+                <img src="@img/tongguo.png" alt="通过">
+            </div>
+            <div v-else class="interview-state">
+                <img src="@img/butongguo.png" alt="错误">
+            </div>
         </div>
     </div>
     

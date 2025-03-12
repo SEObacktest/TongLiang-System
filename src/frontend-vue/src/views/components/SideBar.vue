@@ -35,6 +35,7 @@ function getList() {
             {name: '题库管理', level: 1, group: 3, selected: false, path: '/admin/question'},
             {name: '约面管理', level: 1, group: 3, selected: false, path: '/admin/interview'},
             {name: '报酬管理', level: 1, group: 3, selected: false, path: '/admin/salary'},
+            {name: '流水管理', level: 1, group: 3, selected: false, path: '/admin/settlement'},
         ]
     } else {
         list.value = [

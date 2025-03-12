@@ -5,15 +5,15 @@ import {ref} from 'vue'
 
 import { formulate_time } from '../../utils/tools';
 
-import {get_hr_list_request, get_interview_list_request} from "@/api/api.js";
+import {get_settlement_list_request} from "@/api/api.js";
 
 const props = defineProps(['user'])
-const emit  = defineEmits(['hr_selected'])
+const emit  = defineEmits(['settlement_selected'])
 
 watch(
     () => props.user,
     (newVal, oldVal) => {
-        refresh_interview_list_all(newVal)
+        refresh_activities_list_all(newVal)
     }
 )
 
@@ -22,7 +22,7 @@ watch(
 //     console.log("before mount" + props.user)
 // })
 
-const interview_list = ref([])
+const activity_list = ref([])
 
 const adminId   = ref('')
 const studentId = ref('')
@@ -36,60 +36,78 @@ const passed    = ref('')
 //     "其他": "rgb(255, 225, 0)",
 // })
 
-const interviewList = ref([])
+const settlementList = ref([])
 const hrNameList = ref([])
 
 async function refresh_activities_list(user) {
     if(!user.is_admin) {
         studentId.value = user.userId
     } else {
-        var value = await get_hr_list_request()
+        var value = await get_settlement_list_request()
         if(value.status == false) {
             alert(data.message)
         } else {
-            interviewList.value = value.data
-            interviewList.value.forEach(e => {
+            settlementList.value = value.data
+            settlementList.value.forEach(e => {
                 hrNameList.value[e.pk] = e.fields.username
             });
         }
 
     }
 
-    interview_list.value = await get_interview_list_request({
-       "studentId": studentId.value,
-       "startTime": startTime.value,
-       "endTime"  : endTime.value,
-       "certified": certified.value,
-       "passed"   : passed.value,
-       "adminId"  : adminId.value,
-    })
-    if(interview_list.value.status == false) {
-        alert(interview_list.value.message)
-    } else {
-        interview_list.value = interview_list.value.data
-    }
+    // activity_list.value = await get_activities_list_request({
+    //    "studentId": studentId.value,
+    //    "startTime": startTime.value,
+    //    "endTime"  : endTime.value,
+    //    "certified": certified.value,
+    //    "passed"   : passed.value,
+    //    "adminId"  : adminId.value,
+    // })
+    // if(activity_list.value.status == false) {
+    //     alert(activity_list.value.message)
+    // } else {
+    //     activity_list.value = activity_list.value.data
+    // }
 }
-function interview_click(interview) {
-    console.log("用户点击了" + interview)
-    emit('hr_selected', interview)
+function settlement_click(settlement) {
+    // console.log("用户点击了" + settlement)
+    emit('settlement_selected', settlement)
 }
 
 
-async function refresh_interview_list_all(user) {
-
-    interview_list.value = await get_interview_list_request({
-       "studentId": studentId.value,
-       "startTime": '*',
-       "endTime"  : '*',
-       "certified": '*',
-       "passed"   : '*',
-       "adminId"  : '*',
-    })
-    if(interview_list.value.status == false) {
-        alert(interview_list.value.message)
+async function refresh_activities_list_all(user) {
+    if(!user.is_admin) {
+        studentId.value = user.userId
     } else {
-        interview_list.value = interview_list.value.data
+        var value = await get_settlement_list_request()
+        if(value.status == false) {
+            alert(data.message)
+        } else {
+            settlementList.value = value.data
+            settlementList.value.forEach(e => {
+                hrNameList.value[e.pk] = e.username
+            });
+        }
     }
+    // console.log("studentId: " + studentId.value)
+    // console.log("startTime: " + startTime.value)
+    // console.log("endTime: " + endTime.value)
+    // console.log("certified: " + certified.value)
+    // console.log("passed: " + passed.value)
+    // console.log("adminId: " + adminId.value)
+    // activity_list.value = await get_activities_list_request({
+    //    "studentId": studentId.value,
+    //    "startTime": '*',
+    //    "endTime"  : '*',
+    //    "certified": '*',
+    //    "passed"   : '*',
+    //    "adminId"  : '*',
+    // })
+    // if(activity_list.value.status == false) {
+    //     alert(activity_list.value.message)
+    // } else {
+    //     activity_list.value = activity_list.value.data
+    // }
 }
 
 /*
@@ -130,24 +148,19 @@ defineExpose({
     </div>
     <div class="activity-list">
         <div class="hr-header">
-            <div class="hr-title">约面ID</div>
+            <div class="hr-title">交易ID</div>
             <div class="hr-title">HR</div>
-            <div class="hr-title">约面岗位</div>
-            <div class="hr-title">面试者姓名</div>
-            <div class="hr-title">通勤时间(分钟/M)</div>
-            <div class="hr-title">约面时间</div>
-            <div class="hr-title">操作</div>
+            <div class="hr-title">金额</div>
+            <div class="hr-title">结算时间</div>
+            <div class="hr-title">详情</div>
         </div>
-        <!-- {{ interview_list }} -->
-        <div class="activity" v-for="interview in interview_list">
+        <div class="activity" v-for="settlement in settlementList">
             <!-- {{ hr }} -->
-            <div class="hr-content">{{ interview.id }}</div>
-            <div class="hr-content">{{ interview.hr }}</div>
-            <div class="hr-content">{{ interview.post }}</div>
-            <div class="hr-content">{{ interview.name }}</div>
-            <div class="hr-content">{{  interview.commuteTime }}</div>
-            <div class="hr-content">{{  formulate_time(interview.interview_time) }}</div>
-            <div class="hr-content-botton" @click="interview_click(interview)">查看详情</div>
+            <div class="hr-content">{{ settlement.id }}</div>
+            <div class="hr-content">{{ settlement.hr }}</div>
+            <div class="hr-content">{{  settlement.amount }}</div>
+            <div class="hr-content">{{  formulate_time(settlement.settlement_time) }}</div>
+            <div class="hr-content-botton" @click="settlement_click(settlement)">查看详情</div>
         </div>
     </div>
 </div>
