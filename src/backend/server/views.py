@@ -940,6 +940,8 @@ class Server(viewsets.GenericViewSet):
                 idCard=hr.idCard,
             )
             settlement.save()
+            hr.payDay = datetime.now()
+            hr.save()
             resp = {
                 'status': True,
                 'message': '结算成功'
@@ -975,6 +977,7 @@ class Server(viewsets.GenericViewSet):
                     for interview in interview_list:
                         interview.settlement = True
                         interview.save()
+                    hr.payDay = datetime.now()
 
             resp = {
                 'status': True,

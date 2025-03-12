@@ -19,6 +19,7 @@ class EvaluationUser(AbstractUser):
     age = models.IntegerField(default=0)
     gender = models.CharField(max_length=10, default="")
     account = models.CharField(max_length=30, default="")
+    payDay = models.DateTimeField(default=None, null=True)
 
 #     计算属于该用户的Interview个数
     def getInterviewCount(self):
