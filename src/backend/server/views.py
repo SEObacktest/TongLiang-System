@@ -509,12 +509,16 @@ class Server(viewsets.GenericViewSet):
 
         # post = data.get('post')
         answer = data.get('answer')
+        mainProblem = data.get('mainProblem')
+        problemDescription = data.get('problemDescription')
 
         try:
             # 创建题目对象
             question = CurriculumVitae.objects.create(
                 # post=post,
                 qualified=answer,
+                mainProblem=mainProblem,
+                problemDescription=problemDescription,
                 file=file  # 文件会自动保存到 MEDIA_ROOT 目录
             )
             question.save()
@@ -544,10 +548,14 @@ class Server(viewsets.GenericViewSet):
         questionId = data['id']
         # questionPost = data['post']
         questionAnswer = data['qualified']
+        questionMainProblem = data['mainProblem']
+        questionProblemDescription = data['problemDescription']
         try:
             question = CurriculumVitae.objects.get(id=questionId)
             # question.post = questionPost
             question.qualified = questionAnswer
+            question.mainProblem = questionMainProblem
+            question.problemDescription = questionProblemDescription
             question.save()
             resp = {
                 'status': True,
@@ -601,7 +609,9 @@ class Server(viewsets.GenericViewSet):
                     'create_time': item.createTime,
                     'num_test': item.numTest,
                     'pass_time': item.passTime,
-                    'pass_rate': item.getPassRate()
+                    'pass_rate': item.getPassRate(),
+                    'main_problem': item.mainProblem,
+                    'problem_description': item.problemDescription
                 })
 
             resp = {
@@ -636,7 +646,9 @@ class Server(viewsets.GenericViewSet):
                     'create_time': item.createTime,
                     'num_test': item.numTest,
                     'pass_time': item.passTime,
-                    'pass_rate': item.getPassRate()
+                    'pass_rate': item.getPassRate(),
+                    'main_problem': item.mainProblem,
+                    'problem_description': item.problemDescription
                 })
 
             resp = {
@@ -871,6 +883,32 @@ class Server(viewsets.GenericViewSet):
             }
             print("用户更新失败")
         return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def delete_interview(self, request, *args, **kwargs):
+        print("管理员请求了删除面试")
+        data = request.data
+        interviewId = data['interviewId']
+        try:
+            interview = Interview.objects.get(id=interviewId)
+            curriculumVitae = CurriculumVitae.objects.get(interview=interview)
+
+            curriculumVitae.delete()
+            interview.delete()
+
+            resp = {
+                'status': True,
+                'message': '删除成功'
+            }
+            print("管理员删除面试成功")
+        except:
+            resp = {
+                'status': False,
+                'message': '删除失败'
+            }
+            print("管理员删除面试失败")
+        return Response(resp)
+
 
     # 报酬管理接口
     #################################################
@@ -1304,3 +1342,21 @@ class Server(viewsets.GenericViewSet):
             }
             print("用户导出excel失败")
         return Response(resp)
+
+    @action(detail=False, methods=['post'])
+    def reset(self, request, *args, **kwargs):
+        print("用户请求了重置")
+        data = request.data
+        superPassword = data['superPassword']
+        if superPassword == '22201076':
+            resp = {
+                'status': False,
+                'message': '你想干啥'
+            }
+            return Response(resp)
+        resetType = data['resetType']
+
+        if resetType == 'settlement':
+            settlementList = Settlement.objects.all()
+            for settlement in settlementList:
+                settlement.delete()

@@ -126,6 +126,8 @@ class CurriculumVitae(models.Model):
     createTime = models.DateTimeField(auto_now_add=True)
     numTest = models.IntegerField(default=0)
     passTime = models.IntegerField(default=0)
+    mainProblem = models.CharField(max_length=20, default='')
+    problemDescription = models.TextField(max_length=1000, default='')
 
     def getPassRate(self):
         if self.numTest == 0:
