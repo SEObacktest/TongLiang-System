@@ -220,6 +220,17 @@ export async function post_settle_all_request(data) {
     
 }
 
+// 流水管理
+//////////////////////////////////////////////////
+
+export async function get_settlement_list_request() {
+
+    let value = await get('/api/get_settlement_list/')
+    console.log(value)
+    return value
+    
+}
+
 // 活动管理（已废弃）
 //////////////////////////////////////////////////
 

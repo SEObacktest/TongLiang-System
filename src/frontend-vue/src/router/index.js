@@ -55,6 +55,11 @@ const routes = [
         path: '/admin/test_module',
         name: 'AdminTestModule',
         component: () => import('@/views/admin/TestModule.vue')
+    },
+    {
+        path: '/admin/settlement',
+        name: 'AdminSettlement',
+        component: () => import('@/views/admin/Settlement.vue')
     }
 ]
 
