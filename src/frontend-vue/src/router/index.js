@@ -80,6 +80,26 @@ const routes = [
         path: '/salary-transactions', 
         name: 'SalaryTransactions', 
         component: () => import('@/views/SalaryTransactions.vue')
+    },
+    {
+        path: '/test-module',
+        name: 'TestModule',
+        component: () => import('@/views/JHSrc/TestModule.vue')
+    },
+    {
+        path: '/interview-upload',
+        name: 'InterviewUpload',
+        component: () => import('@/views/JHSrc/InterviewUpload.vue')
+    },
+    {
+        path: '/interview-query',
+        name: 'InterviewQuery',
+        component: () => import('@/views/JHSrc/InterviewQuery.vue')
+    },
+    {
+        path: '/interview-edit',
+        name: 'InterviewEdit',
+        component: () => import('@/views/JHSrc/Interview_edit.vue')
     }
 ]
 

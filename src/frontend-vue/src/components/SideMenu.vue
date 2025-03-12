@@ -8,7 +8,7 @@
         <router-link to="/test-module">测试模块</router-link>
       </li>
       <li :class="{ active: isActive('/interview-management') }">
-        <router-link to="/interview-management">约面管理</router-link>
+        <router-link to="/interview-upload">约面管理</router-link>
       </li>
 
       <!-- 报酬结算 折叠菜单 -->
