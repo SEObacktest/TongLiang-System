@@ -59,7 +59,7 @@ const hr_list = ref([])
 // }
 
 async function delete_interview() {
-    if(!confirm('确定删除题目' + interview.value.id + '吗？ 包括相关的图片')) return;
+    if(!confirm('确定删除面试' + interview.value.id + '吗？ 包括相关的图片')) return;
     var value = await delete_interview_request({'interviewId': interview.value.id})
     if (value.status == true) {
         alert(value.message)

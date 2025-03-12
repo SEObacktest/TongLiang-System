@@ -7,11 +7,10 @@ import { formulate_time } from '../../utils/tools';
 import {
     delete_question_request, 
     post_question_image_request,
-    get_user_image_request,
     question_update_request,
 } from '@/api/api';   
 
-import { post_list } from '../../utils/data';
+import { main_problem } from '../../utils/data';
 
 import { URL } from '../../api/config';
 
@@ -25,11 +24,11 @@ const new_question = ref({
     'id': question.value.id,
     // 'post': question.value.post,
     'qualified': question.value.qualified == true ? '1' : '0',
+    'mainProblem': question.value.main_problem,
+    'problemDescription': question.value.problem_description,
 })
-const hrId = ref(props.questionuserId)
 
 const isEdit = ref(false)
-const userImage = ref([])
 const is_show_image = ref(false)
 const show_image = ref('')
 
@@ -79,6 +78,8 @@ async function question_update() {
     if (
         // new_question.value.post == question.value.post &&
         new_question.value.qualified == question.value.qualified
+        && new_question.value.main_problem == question.value.main_problem
+        && new_question.value.problem_description == question.value.problem_description
     ) {
         return
     }
@@ -137,6 +138,17 @@ function refresh() {
                         <option value="0">False</option>
                     </select>
                 </div>
+                <div class="question-main-problem">主要问题:
+                    <select v-model="new_question.mainProblem">
+                        <option v-for="problem in main_problem">
+                            {{ problem }}
+                        </option>
+                    </select>
+                </div>
+                <div class="question-problem-detail">
+                    <div>问题详情:</div>
+                    <textarea type="text" v-model="new_question.problemDescription"></textarea>
+                </div>
             </form>
         </div>
         <div v-else class="question-right">
@@ -147,11 +159,16 @@ function refresh() {
             <div class="question-pass-rate">通过率: {{ question.pass_rate }}</div>
             <div class="question-pass-num">通过次数: {{ question.pass_time }}</div>
             <div class="question-qualified">答案:</div>
-            <div v-if="question.qualified == true" class="question-qualified">
+            <div v-if="question.qualified == true">
                 <img src="@img/tongguo.png" alt="通过">
             </div>
-            <div v-else class="question-qualified">
+            <div v-else>
                 <img src="@img/butongguo.png" alt="错误">
+            </div>
+            <div v-if="question.main_problem" class="question-main-problem">主要问题: {{ question.main_problem }}</div>
+            <div v-if="question.problem_description" class="question-problem-detail">
+                <div>问题详情:</div>
+                <div>{{ question.problem_description }}</div>
             </div>
         </div>
     </div>
@@ -246,6 +263,18 @@ function refresh() {
 }
 .question-right select {
     height: 30px;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+.question-right img{
+    width: 30px;
+    height: 30px;
+}
+.question-right textarea {
+    width: 300px;
+    height: 100px;
     border: 1px solid black;
     border-radius: 5px;
     font-size: 14px;

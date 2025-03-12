@@ -7,13 +7,14 @@ import {
     post_activity_image_request,
  } from '@/api/api';
 
-import { post_list } from '../../utils/data';
+import { main_problem } from '../../utils/data';
 
 const props = defineProps(['user'])
 const emit  = defineEmits(['close'])
 
 const question_answer    = ref()
-const question_post        = ref()
+const question_main_problem = ref()
+const question_detail    = ref()
 const student_name         = ref(props.user.username)
 
 const image = ref()
@@ -37,12 +38,14 @@ async function create_activity() {
     console.log(props.user.userId)
     console.log(student_name.value)
     console.log(question_answer.value)
-    console.log(question_post.value)
+    // console.log(question_post.value)
 
 
     var data = {
         'answer'    : question_answer.value == '合格' ? true : false,
         // 'post'       : question_post.value,
+        'mainProblem' : question_main_problem.value ? question_main_problem.value : '',
+        'problemDescription': question_detail.value ? question_detail.value : '',
     }
     var value = await create_question_request(data, image.value)
     if (value.status == true) {
@@ -108,20 +111,30 @@ function uploadImage(e) {
     <div class="add-activity" v-else>
         <div class="form">
             <div class="form-left">
-                <!-- <div class="form-item">
-                    <div class="form-item-label">面试岗位</div>
-                    <div class="form-item-input">
-                        <select name="postType" id="post-type" v-model="question_post">
-                            <option v-for="post_type in post_list">
-                                {{ post_type }}
-                            </option>
-                        </select>
+                <div class="question-images">
+                    <div class="image-list">
+                        <div v-if="image != null" class="images">
+                            <span class="delete" @click="delete_image(index)"></span>
+                            <img :src="image_url" alt="image" @click="open_image(image)">
+                        </div>
+                        <div v-else id="box">
+                            <!-- 点击label后也会出现和点击button一样的效果其label中的for的值是服务元素的Id，绑定指定id的元素，点击label后会激活相应的控件  -->
+                            <label class="box-label" for="image-file">
+                                <i class="upload"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                                    <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
+                                </svg></i>
+                            <input type="file" single accept="image/*" value="" id="image-file" @change="uploadImage($event)">上传图片
+                            </label>
+                        <!-- </svg></i> <input type="file" single accept="image/*" value="" id="image-file">上传图片</label> -->
+                            <div id="progress"></div>
+                        </div>
                     </div>
-                </div> -->
+                </div>
             </div>
             <div class="form-right">
                 <div class="form-item">
-                    <div class="form-item-label">答案</div>
+                    <div class="form-item-label">答案: </div>
                     <div class="form-item-input">
                         <!-- {{ question_post }} -->
                         <select name="postType" id="post-type" v-model="question_answer">
@@ -131,25 +144,22 @@ function uploadImage(e) {
                         <!-- <input type="text" placeholder="请选择活动类型" v-model="question_post"> -->
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="question-images">
-            <div class="image-list">
-                <div v-if="image != null" class="images">
-                    <span class="delete" @click="delete_image(index)"></span>
-                    <img :src="image_url" alt="image" @click="open_image(image)">
+                <div class="form-item">
+                    <div class="form-item-label">主要问题: </div>
+                    <div class="form-item-input">
+                        <!-- {{ question_post }} -->
+                        <select name="postType" id="post-type" v-model="question_main_problem">
+                            <option v-for="item in main_problem" :value="item">{{ item }}</option>
+                        </select>
+                        <!-- <input type="text" placeholder="请选择活动类型" v-model="question_post"> -->
+                    </div>
                 </div>
-                <div v-else id="box">
-                    <!-- 点击label后也会出现和点击button一样的效果其label中的for的值是服务元素的Id，绑定指定id的元素，点击label后会激活相应的控件  -->
-                    <label class="box-label" for="image-file">
-                        <i class="upload"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
-                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                            <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
-                        </svg></i>
-                    <input type="file" single accept="image/*" value="" id="image-file" @change="uploadImage($event)">上传图片
-                    </label>
-                <!-- </svg></i> <input type="file" single accept="image/*" value="" id="image-file">上传图片</label> -->
-                    <div id="progress"></div>
+                <div id="question-detail-container" class="form-item">
+                    <div class="form-item-label">问题详情: </div>
+                    <div class="form-item-input">
+                        <!-- <input id="question-detail" type="text" placeholder="请输入问题详情" v-model="question_detail"> -->
+                        <textarea id="activity-content" placeholder="请输入问题详情" v-model="question_detail"></textarea>
+                    </div>
                 </div>
             </div>
         </div>
@@ -249,6 +259,17 @@ function uploadImage(e) {
     border-radius: 5px;
     width: 300px;
     font-size: 14px;
+}
+#question-detail-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: start;
+    margin-bottom: 10px;
+}
+#question-detail {
+    width: 240px;
+    height: 120px;
 }
 #activity-content {
     height: 100px;
