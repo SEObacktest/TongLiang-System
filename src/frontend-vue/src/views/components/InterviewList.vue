@@ -3,7 +3,7 @@
 import { onMounted, watch } from 'vue';
 import {ref} from 'vue'
 
-import { formulate_time } from '../../utils/tools';
+import { formulate_time, formulate_time_MDHM } from '../../utils/tools';
 
 import {get_hr_list_request, get_interview_list_request} from "@/api/api.js";
 
@@ -139,15 +139,15 @@ defineExpose({
             <div class="hr-title">操作</div>
         </div>
         <!-- {{ interview_list }} -->
-        <div class="activity" v-for="interview in interview_list">
+        <div class="hr-body" v-for="interview in interview_list">
             <!-- {{ hr }} -->
             <div class="hr-content">{{ interview.id }}</div>
             <div class="hr-content">{{ interview.hr }}</div>
             <div class="hr-content">{{ interview.post }}</div>
             <div class="hr-content">{{ interview.name }}</div>
             <div class="hr-content">{{  interview.commuteTime }}</div>
-            <div class="hr-content">{{  formulate_time(interview.interview_time) }}</div>
-            <div class="hr-content-botton" @click="interview_click(interview)">查看详情</div>
+            <div class="hr-content">{{  formulate_time_MDHM(interview.interview_time) }}</div>
+            <div class="hr-content" id="botton" @click="interview_click(interview)">查看详情</div>
         </div>
     </div>
 </div>
@@ -228,29 +228,39 @@ input {
 .hr-header {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
+    align-items: center;
+    padding: 4px;
 }
 .hr-title {
-    width: 100px;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    /* align-items: center; */
+    /* width: 100px; */
     font-size: 16px;
     font-weight: bold;
     text-align: center;
 }
-.activity {
+.hr-body {
     background-color: rgba(255, 255, 255, 0.8);
     border: 1px solid black;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     padding: 4px;
 }
 .hr-content {
-    width: 100px;
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    /* align-items: center; */
+    /* width: 100px; */
     font-size: 16px;
     text-align: center;
 }
-.hr-content-botton {
+#botton {
     width: 80px;
     height: 30px;
     font-size: 16px;
@@ -262,7 +272,7 @@ input {
     border-radius: 5px;
     transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
-.hr-content-botton:hover {
+#botton:hover {
     background-color: rgb(0, 195, 255);
     transform: scale(1.1);
 }

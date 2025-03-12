@@ -125,7 +125,7 @@ is_login()
     background-color: rgba(0, 0, 0, 0.3);
 }
 .activity-container {
-    width: 800px;
+    width: 1000px;
     /* height: 1000px; */
     display: flex;
     margin-left: 100px;

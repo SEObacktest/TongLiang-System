@@ -786,7 +786,7 @@ class Server(viewsets.GenericViewSet):
     def get_interview_list(self, request, *args, **kwargs):
         print("用户请求了获取约面列表")
         try:
-            interview_list = Interview.objects.all()
+            interview_list = Interview.objects.all().order_by('-createTime')
             interviewList = []
             for index, item in enumerate(interview_list):
                 interviewList.append(item.to_dict())
@@ -1037,7 +1037,7 @@ class Server(viewsets.GenericViewSet):
     def get_settlement_list(self, request, *args, **kwargs):
         print("用户请求了获取流水列表")
         try:
-            settlement_list = Settlement.objects.all()
+            settlement_list = Settlement.objects.all().order_by("-settlementTime")
             settlementList = []
             for index, item in enumerate(settlement_list):
                 settlementList.append(item.to_dict())

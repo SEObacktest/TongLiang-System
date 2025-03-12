@@ -72,6 +72,7 @@ async function login() {
 	if (value['status'] == true) {
 		if (value.data.isAdmin == true) {			
 			router.push('/admin')
+			return
 		} else {
 			router.push('/')
 		}
