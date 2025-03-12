@@ -1,38 +1,51 @@
 <script setup>
-
-import { ref } from 'vue' 
-
+import { ref, onMounted } from 'vue'
 import router from '@/router'
-import { logout_request } from '@/api/api'
+import { logout_request, is_login_request } from '@/api/api'
 
-const props = defineProps(['user'])
+// Removed defineProps and create reactive user data
+const user = ref(null)
 
-// const user_name = ref(props.user.username)
+// Fetch login info on component mount
+async function fetchUser() {
+  try {
+    const response = await is_login_request()
+    if (response.status === true) {
+      user.value = response.data
+    } else {
+      router.push("/login_register")
+    }
+  } catch (error) {
+    console.error("获取登录状态出错:", error)
+    router.push("/login_register")
+  }
+}
+
+onMounted(() => {
+  fetchUser()
+})
 
 async function logout() {
     await logout_request()
     alert('退出登录成功')
     window.location.reload()
 }
-
 </script>
 
 <template>
-<div></div>
-
-<div id='main'>
-    <div class="logo"></div>
-    <div class="logo-title">同梁在线业务系统</div>
-    <div class="user" v-if="props.user">
-        <div class="user-avatar"></div>
-        <div class="user-name">您好，{{ props.user.username }}</div>
-        <div class="user-logout" @click="logout">退出登录</div>
-    </div>
-    <div class="user" v-else>
-        <div class="user-login" @click="router.push('/login')">登录</div>
-    </div>
-</div>
-
+  <div></div>
+  <div id='main'>
+      <div class="logo"></div>
+      <div class="logo-title">同梁在线业务系统</div>
+      <div class="user" v-if="user">
+          <div class="user-avatar"></div>
+          <div class="user-name">您好，{{ user.username }}</div>
+          <div class="user-logout" @click="logout">退出登录</div>
+      </div>
+      <div class="user" v-else>
+          <div class="user-login" @click="router.push('/login')">登录</div>
+      </div>
+  </div>
 </template>
 
 <style scoped>

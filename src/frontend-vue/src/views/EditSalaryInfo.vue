@@ -12,8 +12,8 @@
           <InputField label="开户行" v-model="formData.bank" placeholder="请输入开户行" />
           <InputField label="电话" v-model="formData.phone" type="tel" placeholder="请输入电话" />
 
-          <!-- 新增城市字段 -->
-          <InputField label="城市" v-model="formData.city" placeholder="请输入所在城市" />
+          <!-- 新增输入框：所在城市 -->
+          <InputField label="所在城市" v-model="formData.city" placeholder="请输入所在城市" />
 
           <!-- 新增出生日期，让用户选择 -->
           <InputField label="出生日期" v-model="formData.birthDate" type="date" />
@@ -46,7 +46,13 @@ import { is_login_request, hr_update_request } from "@/api/api";
 
 export default {
   name: "EditUserInfo",
-  components: { Header, SideMenu, FormCard, InputField, SubmitButton },
+  components: { 
+    Header, 
+    SideMenu, 
+    FormCard, 
+    InputField, 
+    SubmitButton 
+  },
   data() {
     return {
       formData: {
@@ -104,8 +110,6 @@ export default {
           this.formData.userId = resp.data.userId;
           this.formData.username = resp.data.username;
           this.formData.phone = resp.data.phone;
-          // 新增：更新城市字段，如果后端返回城市信息
-          this.formData.city = resp.data.city || "";
           // 如果后端也存了 birthDate、gender，可以在这里一起赋值
         }
       } catch (error) {
@@ -130,10 +134,9 @@ export default {
           // 关键点：后端要 age 是数字，不要传空字符串
           age: ageNumber,            
           gender: this.formData.gender || "",
-          
-          // 新增：城市字段传给后端
+          // 新增字段：city
           city: this.formData.city || "",
-
+          
           // 如果后端不需要存 birthDate 原数据，就不传
           // 或者后端若也需要 birthDate，就加上
           // birthDate: this.formData.birthDate,
