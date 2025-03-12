@@ -4,6 +4,8 @@ import {ref} from 'vue'
 
 import { is_login_request } from '../../api/api';
 
+import router from '../../router';
+
 const user = ref("")
 
 async function is_login() {
@@ -23,7 +25,6 @@ async function is_login() {
         // }
     } else {
         user.value = undefined
-        // alert("请先登录，若无反应请刷新界面")
         // router.push('/login')
         router.push('/login_register')
     }
@@ -37,7 +38,7 @@ is_login()
 
 <div id='main'>
     <div class="container">
-        <h1>欢迎使用同梁在线业务系统</h1>
+        <h1>欢迎使用同梁在线业务系统管理员后台</h1>
         <h2>当前用户: {{ user.username }}</h2>
     </div>
 </div>

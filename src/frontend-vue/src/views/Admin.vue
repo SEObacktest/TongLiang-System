@@ -10,7 +10,8 @@ import {
 } from '../api/api';
 
 import Header         from './components/header/Header.vue';
-import SideBar        from './components/SideBar.vue';  
+import SideBar        from './components/SideBar.vue';
+import Admin from './pages/Admin.vue';  
 import Footer         from './components/footer/Footer.vue';
 
 const pageList = shallowRef([
@@ -41,8 +42,6 @@ const pageList = shallowRef([
 ])
 
 const user                 = ref("")
-
-const selectedName = ref("首页")
 
 function refresh() {
     window.location.reload()
@@ -78,10 +77,10 @@ is_login()
 <Header :user="user"></Header>
 <div id='main'>
     
-    <SideBar :user="user" @selectItem="(key) => {selectedName = key}"></SideBar>
+    <SideBar :user="user"></SideBar>
     <div class="contain">
         <div class="body">
-            <component :is="(pageList.find(e => e.name == selectedName)?.component) || 'div'"></component>
+            <Admin></Admin>
         </div>
     </div>  
 </div>

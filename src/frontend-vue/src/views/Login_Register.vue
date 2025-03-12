@@ -70,8 +70,11 @@ async function login() {
 	var value = await student_login_request(data)
 
 	if (value['status'] == true) {
-		router.push('/')
-		router.push('/')
+		if (value.data.isAdmin == true) {			
+			router.push('/admin')
+		} else {
+			router.push('/')
+		}
 	}
 	
 	loginMessage.value = value['message']
@@ -115,7 +118,7 @@ async function register() {
 
 	if (value['status'] == true) {
 		router.push('/')
-		router.push('/')
+		// router.push('/')
 	}
 
 	registerMessage.value = value['message']
@@ -151,8 +154,8 @@ profile()
 <div id="main" :style=styleVar>
 
 	<div class="logo">
-		<div class="title">学生党员评价量化考核系统</div>
-		<img @click="goHome" src="@img/国际数字经济学院Logo_with_name.png" alt="logo">
+		<img @click="goHome" src="@img/Logo.png" alt="logo">
+		<div class="title">同梁在线业务系统</div>
 	</div>
 
 	<div class="container" :class="{ rightPanelActive: isActive}">
@@ -226,7 +229,7 @@ profile()
 
 .logo {
 	height: 120px;
-	margin-top: -140px;
+	margin-top: -120px;
 	margin-bottom: 40px;
 	display: flex;
 	align-items: center;
@@ -238,15 +241,14 @@ profile()
 .logo .title{
 	font-size: 70px;
 	font-weight: 800;
-	margin-top: 10px;
-	margin-bottom: 10px;
+	margin-top: -10px;
+	margin-bottom: 60px;
 	font-family: "清风行楷体";
 	color: #303030;
 }
 
 .logo img {
 	height: 100%;
-	margin-bottom: 50px;
 	object-fit: contain;
 	cursor: pointer;
 }

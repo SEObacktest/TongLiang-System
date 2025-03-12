@@ -229,6 +229,7 @@ class Server(viewsets.GenericViewSet):
                         'gender': user.gender,
                         'last_login': user.last_login,
                         'date_joined': user.date_joined,
+                        'isAdmin': user.isAdmin,
                     },
                     'message': '登录成功',
                 }
