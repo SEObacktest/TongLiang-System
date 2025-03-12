@@ -1,108 +1,6 @@
-<!-- <template>
-  <div>
-    <NavBar />
-    <div class="container">
-      <SideMenu />
-      <div class="content">
-        <h2>报酬详情</h2>
-        <p><strong>姓名：</strong> {{ salaryData?.name || "未提供" }}</p>
-        <table class="salary-table">
-          <tbody>
-            <tr>
-              <td>应收报酬</td>
-              <td>{{ salaryData?.amount_due || "N/A" }}</td>
-            </tr>
-            <tr>
-              <td>已收报酬</td>
-              <td>{{ salaryData?.amount_received || "N/A" }}</td>
-            </tr>
-            <tr>
-              <td>下次发放时间</td>
-              <td>{{ salaryData?.next_payment_date || "N/A" }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <button @click="viewTransactionDetails" class="btn">点击查看流水详情</button>
-        <button @click="$router.push('/salary-form')" class="btn back">回到报酬结算主页</button>
-      </div>
-    </div>
-  </div>
-</template>
-
-<script>
-import NavBar from "@/components/NavBar.vue";
-import SideMenu from "@/components/SideMenu.vue";
-import { useRouter } from "vue-router";
-
-export default {
-  components: { NavBar, SideMenu },
-  data() {
-    return {
-      salaryData: null // 初始为空，稍后再赋值
-    };
-  },
-  mounted() {
-    // 尝试从路由参数获取数据
-    if (this.$route.params.salaryData) {
-      this.salaryData = this.$route.params.salaryData;
-      // 把数据存到 localStorage，方便后续访问
-      localStorage.setItem("salaryData", JSON.stringify(this.salaryData));
-    } else {
-      // 如果 params 里没有，尝试从 localStorage 取
-      const storedData = localStorage.getItem("salaryData");
-      if (storedData) {
-        this.salaryData = JSON.parse(storedData);
-      }
-    }
-
-    // 如果仍然没有数据，才跳转回 /salary-form
-    /*
-    if (!this.salaryData) {
-      this.$router.push("/salary-form");
-    }
-      */
-  },
-  methods: {
-    viewTransactionDetails() {
-      this.$router.push("/salary-transactions");
-    }
-  }
-};
-</script>
-
-<style scoped>
-.container {
-  display: flex;
-}
-.content {
-  padding: 20px;
-}
-.salary-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-}
-.salary-table td {
-  padding: 10px;
-  border: 1px solid #ddd;
-}
-.btn {
-  padding: 10px 15px;
-  background-color: #87CEEB;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-right: 10px;
-}
-.back {
-  background-color: gray;
-}
-</style> -->
 <template>
   <div>
-    <NavBar />
+    <Header />
     <div class="container">
       <SideMenu />
       <div class="content">
@@ -133,13 +31,13 @@ export default {
 </template>
 
 <script>
-import NavBar from "@/components/NavBar.vue";
+import Header from "./components/header/Header.vue";
 import SideMenu from "@/components/SideMenu.vue";
 import { user_info_request } from "@/api/api"; 
 // 记得把 user_info_request 引入
 
 export default {
-  components: { NavBar, SideMenu },
+  components: { Header, SideMenu },
   data() {
     return {
       salaryData: {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavBar />
+    <Header />
     <div class="container">
       <SideMenu />
       <div class="content">
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import NavBar from "@/components/NavBar.vue";
+import Header from "./components/header/Header.vue";
 import SideMenu from "@/components/SideMenu.vue";
 import FormCard from "@/components/FormCard.vue";
 import InputField from "@/components/InputField.vue";
@@ -46,7 +46,7 @@ import { is_login_request, hr_update_request } from "@/api/api";
 
 export default {
   name: "EditUserInfo",
-  components: { NavBar, SideMenu, FormCard, InputField, SubmitButton },
+  components: { Header, SideMenu, FormCard, InputField, SubmitButton },
   data() {
     return {
       formData: {

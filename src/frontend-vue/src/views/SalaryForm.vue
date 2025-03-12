@@ -1,6 +1,6 @@
 <template>
   <div>
-    <NavBar />
+    <Header :user="userData" />
     <div class="container">
       <SideMenu />
       <div class="content">
@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import NavBar from "@/components/NavBar.vue";
+import Header from "./components/header/Header.vue";
 import SideMenu from "@/components/SideMenu.vue";
 import FormCard from "@/components/FormCard.vue";
 import SubmitButton from "@/components/SubmitButton.vue";
@@ -29,7 +29,7 @@ import { user_info_request } from "@/api/api";
 export default {
   name: "UserInfo",
   components: {
-    NavBar,
+    Header,
     SideMenu,
     FormCard,
     SubmitButton
