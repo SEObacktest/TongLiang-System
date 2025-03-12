@@ -1343,6 +1343,50 @@ class Server(viewsets.GenericViewSet):
             print("用户导出excel失败")
         return Response(resp)
 
+    # 用户信息
+    @action(detail=False, methods=['get'])
+    def user_info(self, request, *args, **kwargs):
+        print("用户请求了个人信息")
+
+        # 检查用户是否已登录
+        if not request.user.is_authenticated:
+            return Response({"status": False, "message": "未登录"}, status=401)
+
+        try:
+            # 从数据库获取用户信息
+            user = EvaluationUser.objects.get(userId=request.user.userId)
+            
+            # 组织返回数据
+            resp = {
+                "status": True,
+                "data": {
+                    "userId": user.userId,
+                    "username": user.username,
+                    "phone": user.phone,
+                    "age": user.age,
+                    "gender": user.gender,
+                    "bankCard": user.bankCard,
+                    "bank": user.bank,
+                    "accountHolderName": user.accountHolderName,
+                    "idCard": user.idCard,
+                    "account": user.account,
+                    "city": user.city,
+                    "payDay": user.payDay,
+                },
+                
+                "message": "用户信息获取成功"
+            }
+            print(resp)
+            print("用户信息返回成功")
+
+        except EvaluationUser.DoesNotExist:
+            resp = {
+                "status": False,
+                "message": "用户信息不存在"
+            }
+            print("用户信息获取失败")
+        return Response(resp)
+
     @action(detail=False, methods=['post'])
     def reset(self, request, *args, **kwargs):
         print("用户请求了重置")

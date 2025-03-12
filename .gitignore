@@ -4,3 +4,6 @@
 **node_modules
 /src/frontend
 /src/frontend-vue/.vscode
+
+#忽略venv文件夹
+/venv
