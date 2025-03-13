@@ -70,7 +70,14 @@ export default {
           this.userData.phone = response.data.phone || "";
           this.userData.city = response.data.city || "";
           this.userData.age = response.data.age || "";
-          this.userData.gender = response.data.gender || "";
+          // 修改gender字段的显示规则
+          if (response.data.gender === 'male') {
+            this.userData.gender = '男';
+          } else if (response.data.gender === 'female') {
+            this.userData.gender = '女';
+          } else {
+            this.userData.gender = 'N/A';
+          }
         } else {
           // 未登录或其他错误时，可以跳转到登录
           console.warn("获取用户信息失败:", response.message);
