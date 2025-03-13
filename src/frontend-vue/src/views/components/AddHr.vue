@@ -69,7 +69,7 @@ async function create_hr() {
 
 
     var data = {
-        'name'             : hr_name.value,
+        'username'             : hr_name.value,
         'userId'           : hr_userId.value,
         'password'         : hr_password.value,
         'phone'            : hr_phone.value,

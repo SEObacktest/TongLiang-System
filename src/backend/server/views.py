@@ -939,6 +939,36 @@ class Server(viewsets.GenericViewSet):
             print("用户获取约面列表失败" + str(e))
         return Response(resp)
 
+    # 获取当前用户创建的所有面试信息
+    @action(detail=False, methods=['get'])
+    def get_user_interview_list(self, request, *args, **kwargs):
+        print("用户请求了获取个人约面列表")
+        try:
+            # 获取当前登录用户
+            current_user = request.user
+
+            # 只获取当前用户创建的面试信息
+            interview_list = Interview.objects.filter(user=current_user)
+
+            interviewList = []
+            for index, item in enumerate(interview_list):
+                interviewList.append(item.to_dict())
+
+            resp = {
+                'status': True,
+                'data': interviewList,
+            }
+            print(f"用户'{current_user.username}'获取个人约面列表成功，共{len(interviewList)}条记录")
+        except Exception as e:
+            resp = {
+                'status': False,
+                'data': '获取失败：' + str(e)
+            }
+            print("用户获取个人约面列表失败：" + str(e))
+
+        return Response(resp)
+
+
     @action(detail=False, methods=['post'])
     def post_curriculumVitae_image(self, request, *args, **kwargs):
         print("用户请求了提交约面者简历")
