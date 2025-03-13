@@ -78,8 +78,8 @@ async function question_update() {
     if (
         // new_question.value.post == question.value.post &&
         new_question.value.qualified == question.value.qualified
-        && new_question.value.main_problem == question.value.main_problem
-        && new_question.value.problem_description == question.value.problem_description
+        && new_question.value.mainProblem == question.value.main_problem
+        && new_question.value.problemDescription == question.value.problem_description
     ) {
         return
     }
