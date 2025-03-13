@@ -477,3 +477,12 @@ export async function user_info_request(data){
     console.log(value)
     return value
 }
+
+//
+export async function get_salary_info_request() {
+
+    let value = await get('/api/get_salary_info/')
+    console.log(value)
+    return value
+
+}

@@ -1,3 +1,4 @@
+<!-- 用于用户界面的报酬详情 -->
 <template>
   <div>
     <Header />
@@ -9,12 +10,16 @@
         <table class="salary-table">
           <tbody>
             <tr>
-              <td>应收报酬</td>
-              <td>{{ salaryData.amount_due || "N/A" }}</td>
+              <td>应收报酬 (待发工资，根据面试数据与发薪日计算)</td>
+              <td>{{ formattedAmountDue }}</td>
             </tr>
             <tr>
-              <td>已收报酬</td>
-              <td>{{ salaryData.amount_received || "N/A" }}</td>
+              <td>已收报酬 (累计结算金额)</td>
+              <td>{{ formattedAmountReceived }}</td>
+            </tr>
+            <tr>
+              <td>未结算线下面试数量：</td>
+              <td>{{ unsettledCount }}</td>
             </tr>
             <tr>
               <td>下次发放时间</td>
@@ -33,8 +38,7 @@
 <script>
 import Header from "./components/header/Header.vue";
 import SideMenu from "@/components/SideMenu.vue";
-import { user_info_request } from "@/api/api"; 
-// 记得把 user_info_request 引入
+import { user_info_request, get_salary_info_request } from "@/api/api"; 
 
 export default {
   components: { Header, SideMenu },
@@ -45,25 +49,50 @@ export default {
         amount_due: "",
         amount_received: "",
         next_payment_date: ""
-      }
+      },
+      unsettledCount: 0
     };
   },
   async mounted() {
     // 在页面挂载时，调用 user_info_request
     try {
-      const resp = await user_info_request();
+      const respUser = await user_info_request();
       // 后端返回 { status: true/false, data: {...}, message: "..." }
-      if (resp.status) {
-        this.salaryData.name = resp.data.username || "";
-        this.salaryData.next_payment_date = resp.data.payDay || "";
-        console.log(resp.data.payDay)
+      if (respUser.status) {
+        this.salaryData.name = respUser.data.username || "";
+        //this.salaryData.next_payment_date = resp.data.payDay || "";
+        this.salaryData.next_payment_date = respUser.data.payDay 
+          ? new Date(respUser.data.payDay).toISOString().split('T')[0] 
+          : "";
+        console.log(respUser.data.payDay)
       } else {
-        console.warn("获取用户信息失败:", resp.message);
+        console.warn("获取用户信息失败:", respUser.message);
         this.$router.push("/login_register");
       }
     } catch (error) {
       console.error("请求 user_info 失败:", error);
-      // this.$router.push("/login_register");
+    }
+
+    // 新增：调用获取未结算面试数的接口
+    try {
+      const respSalary = await get_salary_info_request();
+      if (respSalary.status) {
+        this.salaryData.amount_due = respSalary.data.amount_due || "";
+        this.salaryData.amount_received = respSalary.data.amount_received || "";
+        this.unsettledCount = respSalary.data.unsettled_interviews || 0;
+      } else {
+        console.warn("获取报酬信息失败:", respSalary.message);
+      }
+    } catch (error) {
+      console.error("请求报酬信息时出错:", error);
+    }
+  },
+  computed: {
+    formattedAmountDue() {
+      return this.salaryData.amount_due !== "" ? `￥${this.salaryData.amount_due}` : "N/A";
+    },
+    formattedAmountReceived() {
+      return this.salaryData.amount_received !== "" ? `￥${this.salaryData.amount_received}` : "N/A";
     }
   },
   methods: {

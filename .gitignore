@@ -9,3 +9,4 @@
 /venv
 src/backend/db.sqlite3
 src/backend/db.sqlite3
+src/backend/db.sqlite3

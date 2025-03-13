@@ -1,6 +1,8 @@
 import io, os
 import json
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 
 from django.core.serializers import serialize
 from django.http import FileResponse
@@ -17,6 +19,8 @@ import xlwt
 
 from .models import EvaluationUser, Activity, ActivityImage, UserImage, Interview, CurriculumVitae, Settlement
 
+#hr每面试一个人得到的报酬，可以改
+salaryrate = 100
 
 # 参考: https://blog.csdn.net/weixin_55638841/article/details/133996079
 def generate_excel(activity_list):
@@ -438,6 +442,73 @@ class Server(viewsets.GenericViewSet):
             print("管理员删除学生失败")
         return Response(resp)
 
+    @action(detail=False, methods=['get'])
+    def get_salary_info(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return Response({
+                'status': False,
+                'message': '请先登录'
+            })
+        settled_count = request.user.getSettlementInterview().count()
+        settlements = Settlement.objects.filter(user=request.user)
+        total_received = sum(s.amount for s in settlements)
+        
+        # 新增：使用用户定义的发薪日变量，默认15
+        pay_day = request.user.payDay.day if request.user.payDay else 15
+
+        today = timezone.now()
+        if today.day < pay_day:
+            # 计算上个月从1日到pay_day的数据
+            prev_month = today - relativedelta(months=1)
+            period_start = prev_month.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            period_end = prev_month.replace(day=pay_day, hour=23, minute=59, second=59, microsecond=999999)
+            count = Interview.objects.filter(
+                user=request.user,
+                settlement=False,
+                isArrived=True,
+                interviewTime__range=(period_start, period_end)
+            ).count()
+        else:
+            # 当前月份：从1日到pay_day作为基础期
+            current_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+            base_period_start = current_month
+            base_period_end = today.replace(day=pay_day, hour=23, minute=59, second=59, microsecond=999999)
+            base_count = Interview.objects.filter(
+                user=request.user,
+                settlement=False,
+                isArrived=True,
+                interviewTime__range=(base_period_start, base_period_end)
+            ).count()
+            if today.day > pay_day:
+                extra_period_start = today.replace(day=pay_day+1, hour=0, minute=0, second=0, microsecond=0)
+                extra_period_end = today  # up to current moment
+                extra_count = Interview.objects.filter(
+                    user=request.user,
+                    settlement=False,
+                    isArrived=True,
+                    interviewTime__range=(extra_period_start, extra_period_end)
+                ).count()
+            else:
+                extra_count = 0
+            count = base_count + extra_count
+
+        calculated_amount_due = count * salaryrate
+
+        resp = {
+            'status': True,
+            'data': {
+                'username': request.user.username,
+                'unsettled_interviews': request.user.getUnSettlementInterview().count(),
+                'settled_interviews': settled_count,
+                'amount_due': calculated_amount_due,
+                'amount_received': total_received,
+                'salary_rate': salaryrate,
+                'payDay': request.user.payDay,
+            },
+            'message': '获取报酬信息成功'
+        }
+        return Response(resp)
+
     # 在线HR相关接口
     #################################################
 
@@ -547,7 +618,7 @@ class Server(viewsets.GenericViewSet):
 
         # 读取并解析上传的 JSON 文件
         json_file = request.FILES.get("json")
-        if json_file:
+        if (json_file):
             data = json.loads(json_file.read().decode('utf-8'))
         else:
             return Response({"status": False, "message": "没有上传JSON文件"})
@@ -776,7 +847,7 @@ class Server(viewsets.GenericViewSet):
 
         # 读取并解析上传的 JSON 文件
         json_file = request.FILES.get("json")
-        if json_file:
+        if (json_file):
             data = json.loads(json_file.read().decode('utf-8'))
         else:
             return Response({"status": False, "message": "没有上传JSON文件"})
@@ -1028,7 +1099,8 @@ class Server(viewsets.GenericViewSet):
                 idCard=hr.idCard,
             )
             settlement.save()
-            hr.payDay = datetime.now()
+            hr.payDay = hr.payDay = (datetime.now() + relativedelta(months=1)).date()
+            #hr.payDay = datetime.now()
             hr.save()
             resp = {
                 'status': True,
@@ -1086,10 +1158,14 @@ class Server(viewsets.GenericViewSet):
     @action(detail=False, methods=['get'])
     def get_settlement_list(self, request, *args, **kwargs):
         print("用户请求了获取流水列表")
+        # 判断用户是否登录
+        if not request.user.is_authenticated:
+            return Response({'status': False, 'message': '请先登录'})
         try:
-            settlement_list = Settlement.objects.all().order_by("-settlementTime")
+            # 仅获取当前用户的结算记录
+            settlement_list = Settlement.objects.filter(user=request.user).order_by("-settlementTime")
             settlementList = []
-            for index, item in enumerate(settlement_list):
+            for item in settlement_list:
                 settlementList.append(item.to_dict())
             resp = {
                 'status': True,

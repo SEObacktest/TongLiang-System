@@ -52,6 +52,7 @@ class EvaluationUser(AbstractUser):
             "unSettlementInterview": self.getUnSettlementInterview().count(),
             "settlementInterview": self.getSettlementInterview().count(),
             "city": self.city,
+            "payDay": self.payDay,
         }
 
 class Activity(models.Model):
