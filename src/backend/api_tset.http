@@ -18,3 +18,11 @@ Content-Type: application/json
 
 ###
 GET http://localhost:8000/api/get_salary_list/
+
+###
+POST http://localhost:8000/api/get_user_interview_list/
+Content-Type: application/json
+
+{
+    "userId": "3212901134"
+}

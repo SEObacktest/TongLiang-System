@@ -940,13 +940,14 @@ class Server(viewsets.GenericViewSet):
         return Response(resp)
 
     # 获取当前用户创建的所有面试信息
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['post'])
     def get_user_interview_list(self, request, *args, **kwargs):
         print("用户请求了获取个人约面列表")
+        data = request.data
         try:
             # 获取当前登录用户
-            current_user = request.user
-
+            userId = data['userId']
+            current_user = EvaluationUser.objects.get(userId=userId)
             # 只获取当前用户创建的面试信息
             interview_list = Interview.objects.filter(user=current_user)
 
@@ -967,7 +968,6 @@ class Server(viewsets.GenericViewSet):
             print("用户获取个人约面列表失败：" + str(e))
 
         return Response(resp)
-
 
     @action(detail=False, methods=['post'])
     def post_curriculumVitae_image(self, request, *args, **kwargs):
